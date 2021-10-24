@@ -1,0 +1,28 @@
+version: "2"
+
+plugins:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - python
+  fixme:
+    enabled: true
+  pep8:
+    enabled: true
+  radon:
+    enabled: true
+  sonar-python:
+    enabled: true
+    config:
+      tests_patterns:
+        - tests/**/*
+
+
+exclude_patterns:
+- tests/**/*
+- sgj2021.egg-info/**/*
+- docs/**/*
+- venv/**/*
+- dist/**/*
+- .github/**/*
