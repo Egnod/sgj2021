@@ -1,5 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
 ### Python template
-
 .idea/
 .vscode/
 # Byte-compiled / optimized / DLL files
@@ -24,11 +24,10 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+share/python-wheels/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -39,11 +38,11 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
+
 .coverage
 .coverage.*
 .cache
@@ -51,9 +50,9 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
+cover/
 .hypothesis/
 .pytest_cache/
-cover/
 
 # Translations
 *.mo
@@ -64,6 +63,7 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
 
 # Flask stuff:
 instance/
@@ -82,7 +82,12 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# IPython
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
 profile_default/
 ipython_config.py
 
@@ -129,6 +134,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# VSCode
+.vscode/
+
+# JetBrains IDE
+.idea/
 .dmypy.json
 dmypy.json
 
