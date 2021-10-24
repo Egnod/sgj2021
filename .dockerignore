@@ -1,7 +1,9 @@
-# Created by .ignore support plugin (hsz.mobi)
 ### Python template
+
+deploy/
 .idea/
 .vscode/
+.git/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -24,10 +26,11 @@ parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-share/python-wheels/
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -38,11 +41,11 @@ share/python-wheels/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
-
 .coverage
 .coverage.*
 .cache
@@ -50,9 +53,9 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-cover/
 .hypothesis/
 .pytest_cache/
+cover/
 
 # Translations
 *.mo
@@ -63,7 +66,6 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-
 
 # Flask stuff:
 instance/
@@ -82,12 +84,7 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
+# IPython
 profile_default/
 ipython_config.py
 
@@ -134,12 +131,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
-# VSCode
-.vscode/
-
-# JetBrains IDE
-.idea/
 .dmypy.json
 dmypy.json
 
@@ -151,9 +142,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-monkeytype.sqlite3
+requirements.txt
 .deta
 .env.deta
-requirements.txt
-
-.vercel
