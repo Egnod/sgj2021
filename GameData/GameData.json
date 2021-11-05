@@ -3,10 +3,10 @@
     "name" : "Village accident",
     "description": "Long intro event descriontion",
     "sprite": "GameData/Images/Events/Village accident/intro.png",
-    "depenedencies": [
+    "dependencies": [
       "Another card name"
     ],
-    "descisions": [
+    "decisions": [
       {
         "description": "Short description 1",
         "sprite": "GameData/Images/Events/Village accident/des1.png",

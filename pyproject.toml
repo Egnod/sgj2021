@@ -9,6 +9,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 arcade = "^2.6.3"
+tinydb = "^4.5.2"
+gspread = "^4.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
