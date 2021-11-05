@@ -1,53 +1,64 @@
-{
-  "name" : "Village accident",
-  "description": "Long intro event descriontion",
-  "depenedencies": [
-    "Another card name"
-  ],
-  "descisions": [
-    {
-      "description": "Short description 1",
-      "consequence": {
-        "text": "Long text with event consequence description 1",
-        "price": 3,
-        "rewards": {
-          "happiness": -3,
-          "fatum": 2
+[
+  {
+    "name" : "Village accident",
+    "description": "Long intro event descriontion",
+    "sprite": "GameData/Images/Events/Village accident/intro.png",
+    "depenedencies": [
+      "Another card name"
+    ],
+    "descisions": [
+      {
+        "description": "Short description 1",
+        "sprite": "GameData/Images/Events/Village accident/des1.png",
+        "consequence": {
+          "text": "Long text with event consequence description 1",
+          "sprite": "GameData/Images/Events/Village accident/cons1.png",
+          "price": 3,
+          "rewards": {
+            "happiness": -3,
+            "fatum": 2
+          }
+        }
+      },
+      {
+        "description": "Short description 2",
+        "sprite": "GameData/Images/Events/Village accident/des2.png",
+        "consequence": {
+          "text": "Long text with event consequence description 2",
+          "sprite": "GameData/Images/Events/Village accident/cons2.png",
+          "price": 6,
+          "rewards": {
+            "happiness": 5,
+            "fatum": -2
+          }
+        }
+      },
+      {
+        "description": "Short description 3",
+        "sprite": "GameData/Images/Events/Village accident/des3.png",
+        "consequence": {
+          "text": "Long text with event consequence description 3",
+          "sprite": "GameData/Images/Events/Village accident/cons3.png",
+          "price": 12,
+          "rewards": {
+            "happiness": -10,
+            "fatum": 4
+          }
+        }
+      },
+      {
+        "description": "Short description 4",
+        "sprite": "GameData/Images/Events/Village accident/des4.png",
+        "consequence": {
+          "text": "Long text with event consequence description 4 (await)",
+          "sprite": "GameData/Images/Events/Village accident/cons4.png",
+          "price": 0,
+          "rewards": {
+            "happiness": -15,
+            "fatum": 10
+          }
         }
       }
-    },
-    {
-      "description": "Short description 2",
-      "consequence": {
-        "text": "Long text with event consequence description 2",
-        "price": 6,
-        "rewards": {
-          "happiness": 5,
-          "fatum": -2
-        }
-      }
-    },
-    {
-      "description": "Short description 3",
-      "consequence": {
-        "text": "Long text with event consequence description 3",
-        "price": 12,
-        "rewards": {
-          "happiness": -10,
-          "fatum": 4
-        }
-      }
-    },
-    {
-      "description": "Short description 4",
-      "consequence": {
-        "text": "Long text with event consequence description 4 (await)",
-        "price": 0,
-        "rewards": {
-          "happiness": -15,
-          "fatum": 10
-        }
-      }
-    }
-  ]
-}
+    ]
+  }
+]
