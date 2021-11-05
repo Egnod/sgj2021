@@ -44,23 +44,9 @@ class SelectCardSprite(arcade.Sprite):
         self.respawning = 1
         print(self.index, math.floor(self.selects_count / 2))
 
-        if self.selects_count % 2:
-            self.center_x = SCREEN_WIDTH / 2
-
-            if self.index < math.floor(self.selects_count / 2):
-                self.center_x -= (self.width * self.index) * self.selects_count
-
-            elif self.index > math.floor(self.selects_count / 2):
-                self.center_x += (self.width * self.index) * self.selects_count
-
-        else:
-            self.center_x = SCREEN_WIDTH / 2 - self.width * self.selects_count
-
-            if self.index < math.floor(self.selects_count / 2):
-                self.center_x -= (self.width * self.index) * self.selects_count
-
-            elif self.index > math.floor(self.selects_count / 2):
-                self.center_x += (self.width * self.index) * self.selects_count
+        chunk_size = SCREEN_WIDTH / self.selects_count
+        pos_shift = chunk_size / 2
+        self.center_x = chunk_size * self.index + pos_shift
 
         self.center_y = -self.height
         self.angle = 0
