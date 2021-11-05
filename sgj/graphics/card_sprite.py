@@ -86,9 +86,9 @@ class CardSprite(arcade.Sprite):
             self.speed = -self.max_speed
 
         if self.remove:
-            self.change_x = self.speed
+            self.change_x = -self.speed
 
-            if self.left > SCREEN_WIDTH:  # remove after off screen
+            if self.right < 0:  # remove after off screen
                 self.remove_from_sprite_lists()
 
         elif self.for_show:

@@ -1,5 +1,3 @@
-import math
-
 import arcade
 from pyglet.input import Joystick
 
@@ -31,6 +29,9 @@ class SelectCardSprite(arcade.Sprite):
         self.joystick: Joystick = joystick
         self.remove = False
         self.for_show = False
+        self.to_start = False
+        self.start_y = None
+        self.start_x = None
 
         # Mark that we are respawning.
         self.respawn()
@@ -42,16 +43,20 @@ class SelectCardSprite(arcade.Sprite):
         """
         # If we are in the middle of respawning, this is non-zero.
         self.respawning = 1
-        print(self.index, math.floor(self.selects_count / 2))
 
         chunk_size = SCREEN_WIDTH / self.selects_count
         pos_shift = chunk_size / 2
-        self.center_x = chunk_size * self.index + pos_shift
+        self.start_x = self.center_x = chunk_size * self.index + pos_shift
 
         self.center_y = -self.height
+
         self.angle = 0
 
         self.show()
+
+    def check_or_move_to_start(self):
+        self.thrust = 30
+        self.to_start = True
 
     def hide(self):
         """
@@ -72,6 +77,7 @@ class SelectCardSprite(arcade.Sprite):
         """
         Update card state.
         """
+
         if self.speed > 0:
             self.speed -= self.drag
             if self.speed < 0:
@@ -89,18 +95,48 @@ class SelectCardSprite(arcade.Sprite):
             self.speed = -self.max_speed
 
         if self.remove:
-            self.change_x = self.speed
+            self.change_y = -self.speed
 
-            if self.left > SCREEN_WIDTH:  # remove after off screen
+            if self.bottom < 0:  # remove after off screen
                 self.remove_from_sprite_lists()
 
         elif self.for_show:
             if self.center_y + self.speed > (self.height + 20):
                 self.change_y = (self.height + 20) - self.center_y
+                self.start_y = self.center_y + self.change_y
                 self.for_show = False
             else:
                 self.change_y = self.speed
 
+        elif self.to_start:
+            self.change_y = self.change_x = 0
+
+            if self.center_x != self.start_x:
+                if self.center_x < self.start_x:
+                    if self.center_x + self.speed > self.start_x:
+                        self.change_x = self.start_x - self.center_x
+                    elif self.center_x + self.speed < self.start_x:
+                        self.change_x = self.speed
+                elif self.center_x > self.start_x:
+                    if self.center_x - self.speed < self.start_x:
+                        self.change_x = -(abs(self.center_x) - abs(self.start_x))
+                    elif self.center_x - self.speed > self.start_x:
+                        self.change_x = -self.speed
+
+            if self.center_y != self.start_y:
+                if self.center_y < self.start_y:
+                    if self.center_y + self.speed > self.start_y:
+                        self.change_y = self.start_y - self.center_y
+                    elif self.center_y + self.speed < self.start_y:
+                        self.change_y = self.speed
+                elif self.center_y > self.start_y:
+                    if self.center_y - self.speed < self.start_y:
+                        self.change_y = -(abs(self.center_y) - abs(self.start_y))
+                    elif self.center_y - self.speed > self.start_y:
+                        self.change_y = -self.speed
+
+            if self.start_x == self.center_x and self.start_y == self.center_y:
+                self.to_start = False
         else:
             self.stop()
 

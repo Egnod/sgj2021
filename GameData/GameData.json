@@ -1,10 +1,10 @@
 {
   "name" : "Village accident",
   "description": "Long intro event descriontion",
-  "depenedencies": [
+  "dependencies": [
     "Another card name"
   ],
-  "descisions": [
+  "decisions": [
     {
       "description": "Short description 1",
       "consequence": {

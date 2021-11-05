@@ -28,6 +28,8 @@ class GameView(arcade.View):
 
         self.explosion_list = []
 
+        self.check_unheld = None
+
         for joystick in self.window.joysticks:
             joystick.push_handlers(self)
 
@@ -63,7 +65,7 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
 
-        cards = arcade.get_sprites_at_point((x, y), self.card_sprite_list)
+        cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
         if len(cards) > 0:
             self.held_card = cards[-1]
@@ -86,7 +88,7 @@ class GameView(arcade.View):
         """Called when the user presses a mouse button."""
 
         if self.held_card:
-            self.held_card.hide()
+            self.check_unheld = self.held_card
             self.held_card = None
 
     def on_key_press(self, symbol, modifiers):
@@ -123,6 +125,20 @@ class GameView(arcade.View):
             ]
 
             self.select_card_sprite_list.extend(select_cards_sprite)
+
+        elif self.check_unheld:
+            selected_card = None
+
+            if arcade.check_for_collision_with_list(
+                self.check_unheld, self.card_sprite_list
+            ):
+                selected_card = self.check_unheld
+
+            if not selected_card:
+                for card in self.select_card_sprite_list:
+                    card.check_or_move_to_start()
+
+            self.check_unheld = None
 
         self.card_sprite_list.update()
         self.select_card_sprite_list.update()
