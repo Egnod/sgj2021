@@ -130,7 +130,8 @@ class GameView(arcade.View):
             selected_card = None
 
             if arcade.check_for_collision_with_list(
-                self.check_unheld, self.card_sprite_list
+                self.check_unheld,
+                self.card_sprite_list,
             ):
                 selected_card = self.check_unheld
 
