@@ -1,3 +1,4 @@
+
 import arcade
 from pyglet.input import Joystick
 
@@ -27,11 +28,21 @@ class SelectCardSprite(arcade.Sprite):
         self.drag = 0.05
         self.respawning = 0
         self.joystick: Joystick = joystick
+
         self.remove = False
         self.for_show = False
         self.to_start = False
+
         self.start_y = None
         self.start_x = None
+
+        self.show_primary_card = False
+        self.show_primary_card_setted = False
+        self.show_primary_card_setted_at = None
+
+        self.selected_effect = False
+
+        self.unshow_primary_card = False
 
         # Mark that we are respawning.
         self.respawn()
@@ -65,6 +76,37 @@ class SelectCardSprite(arcade.Sprite):
         self.thrust = 30
         self.remove = True
 
+    def set_primary_card(self):
+        """
+        Show primary card.
+        """
+
+        self.show_primary_card = True
+        self.show_primary_card_setted = False
+
+    def unset_primary_card(self):
+        """
+        Unshow primary card.
+        """
+
+        self.show_primary_card = False
+        self.show_primary_card_setted = False
+        self.unshow_primary_card = True
+
+    def wipe_primary_card_actions(self):
+        """
+        Wipe all primary properties.
+        """
+        self.show_primary_card = False
+        self.show_primary_card_setted = False
+        self.unshow_primary_card = False
+
+    def set_selected_card(self):
+        self.scale = 0.4
+
+    def unset_selected_card(self):
+        self.scale = SELECT_CARD_SCALE
+
     def show(self):
         """
         Show card for use.
@@ -93,6 +135,8 @@ class SelectCardSprite(arcade.Sprite):
             self.speed = self.max_speed
         if self.speed < -self.max_speed:
             self.speed = -self.max_speed
+
+        self.change_y = self.change_x = 0
 
         if self.remove:
             self.change_y = -self.speed
@@ -137,6 +181,24 @@ class SelectCardSprite(arcade.Sprite):
 
             if self.start_x == self.center_x and self.start_y == self.center_y:
                 self.to_start = False
+
+        elif self.show_primary_card and not self.show_primary_card_setted:
+            self.speed = 10
+            target_y = self.start_y + 30
+
+            if self.center_y != target_y:
+                self.change_y = self.speed
+            else:
+                self.show_primary_card_setted = True
+
+        elif self.unshow_primary_card:
+            self.speed = 10
+
+            if self.center_y != self.start_y:
+                self.change_y = -self.speed
+            else:
+                self.unshow_primary_card = False
+
         else:
             self.stop()
 

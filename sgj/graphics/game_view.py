@@ -1,3 +1,4 @@
+
 import arcade
 
 from sgj.graphics.card_sprite import CardSprite
@@ -16,7 +17,7 @@ class GameView(arcade.View):
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
-        self.select_card_sprite_list = arcade.SpriteList()
+        self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
         self.held_card = None
 
         # Sounds
@@ -69,6 +70,8 @@ class GameView(arcade.View):
 
         if len(cards) > 0:
             self.held_card = cards[-1]
+            self.held_card.wipe_primary_card_actions()
+            self.held_card.set_selected_card()
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """User moves mouse"""
@@ -77,6 +80,15 @@ class GameView(arcade.View):
         if card := self.held_card:
             card.center_x += dx
             card.center_y += dy
+
+        else:
+            cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
+
+            if len(cards) > 0:
+                cards[-1].set_primary_card()
+            else:
+                for card in self.select_card_sprite_list:
+                    card.unset_primary_card()
 
     def on_mouse_release(
         self,
@@ -138,6 +150,7 @@ class GameView(arcade.View):
             if not selected_card:
                 for card in self.select_card_sprite_list:
                     card.check_or_move_to_start()
+                    card.unset_selected_card()
 
             self.check_unheld = None
 
