@@ -1,0 +1,53 @@
+{
+  "name" : "Village accident",
+  "description": "Long intro event descriontion",
+  "depenedencies": [
+    "Another card name"
+  ],
+  "descisions": [
+    {
+      "description": "Short description 1",
+      "consequence": {
+        "text": "Long text with event consequence description 1",
+        "price": 3,
+        "rewards": {
+          "happiness": -3,
+          "fatum": 2
+        }
+      }
+    },
+    {
+      "description": "Short description 2",
+      "consequence": {
+        "text": "Long text with event consequence description 2",
+        "price": 6,
+        "rewards": {
+          "happiness": 5,
+          "fatum": -2
+        }
+      }
+    },
+    {
+      "description": "Short description 3",
+      "consequence": {
+        "text": "Long text with event consequence description 3",
+        "price": 12,
+        "rewards": {
+          "happiness": -10,
+          "fatum": 4
+        }
+      }
+    },
+    {
+      "description": "Short description 4",
+      "consequence": {
+        "text": "Long text with event consequence description 4 (await)",
+        "price": 0,
+        "rewards": {
+          "happiness": -15,
+          "fatum": 10
+        }
+      }
+    }
+  ]
+}
