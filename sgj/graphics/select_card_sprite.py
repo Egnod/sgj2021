@@ -65,6 +65,10 @@ class SelectCardSprite(arcade.Sprite):
 
         self.show()
 
+    @property
+    def selected_target_y(self):
+        return self.start_y + 30 if self.start_y else 0
+
     def check_or_move_to_start(self):
         self.thrust = 30
         self.to_start = True
@@ -81,6 +85,9 @@ class SelectCardSprite(arcade.Sprite):
         Show primary card.
         """
 
+        if self.center_y != self.start_y:
+            return None
+
         self.show_primary_card = True
         self.show_primary_card_setted = False
 
@@ -88,6 +95,9 @@ class SelectCardSprite(arcade.Sprite):
         """
         Unshow primary card.
         """
+
+        if self.center_y != self.selected_target_y:
+            return None
 
         self.show_primary_card = False
         self.show_primary_card_setted = False
@@ -184,9 +194,8 @@ class SelectCardSprite(arcade.Sprite):
 
         elif self.show_primary_card and not self.show_primary_card_setted:
             self.speed = 10
-            target_y = self.start_y + 30
 
-            if self.center_y != target_y:
+            if self.center_y != self.selected_target_y:
                 self.change_y = self.speed
             else:
                 self.show_primary_card_setted = True

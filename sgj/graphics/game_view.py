@@ -146,6 +146,7 @@ class GameView(arcade.View):
                 self.card_sprite_list,
             ):
                 selected_card = self.check_unheld
+                selected_card.wipe_primary_card_actions()
 
             if not selected_card:
                 for card in self.select_card_sprite_list:
