@@ -44,7 +44,7 @@ class CardSprite(arcade.Sprite):
         """
         # If we are in the middle of respawning, this is non-zero.
         self.respawning = 1
-        self.center_x = SCREEN_WIDTH / 2
+        self.center_x = arcade.get_window().width / 2
         self.center_y = -self.height
         self.angle = 0
 
