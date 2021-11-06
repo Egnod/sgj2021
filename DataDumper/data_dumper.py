@@ -1,7 +1,10 @@
+import os
 from typing import Optional
 
 import gspread
-from tinydb import TinyDB
+import pandas
+from tinydb import TinyDB, Query
+import pandas as pd
 
 
 def get_sprite_path(name: str, sprite_name: Optional[str] = None):
@@ -13,46 +16,40 @@ def get_sprite_path(name: str, sprite_name: Optional[str] = None):
 
 
 class DataDumper(object):
-    COL_NAME: int = 1
-    COL_DEPENDENCIES: int = 2
-    COL_INTRO_TEXT: int = 3
-    COL_DECISIONS_TEXT: int = 5
-    COL_CONSEQUENCES_TEXT: int = 6
-    COL_PRICES: int = 7
-    COL_REWARDS: int = 8
+    COL_NAME: int = 0
+    COL_DEPENDENCIES: int = 1
+    COL_INTRO_TEXT: int = 2
+    COL_DECISIONS_TEXT: int = 4
+    COL_CONSEQUENCES_TEXT: int = 5
+    COL_PRICES: int = 6
+    COL_REWARDS: int = 7
 
     SPRITE_NAME_INTRO = "intro.png"
+    DATABASE_FILEPATH = os.path.join("..", "GameData", "GameData.json")
 
     def __init__(self, table_id):
         self._table_id = table_id
-        self._db = TinyDB("GameData.json")
+        self._db = TinyDB(self.DATABASE_FILEPATH)  # type: TinyDB
 
     def load_data(self):
+
         gc = gspread.service_account()
         table = gc.open_by_key(self._table_id)
         sheet = table.worksheet("Sheet1")
-        self.fill_game_data(sheet)
+        vals = pd.DataFrame(sheet.get_all_values())
+
+        events = self.construct_events(vals)
+        self._db.upsert({'events': events}, Query().events.exists())
 
     @staticmethod
-    def construct_dependencies(val: Optional[str]):
-        if val is None:
-            return []
-        return val.splitlines()
-
-    @staticmethod
-    def fill_event_by_idx(event: dict, sheet: gspread.Worksheet, row: int):
+    def fill_event_by_idx(event: dict, sheet: pd.DataFrame, row: int):
         name = event["name"]
         event.update(
             {
-                "description": sheet.cell(row, DataDumper.COL_INTRO_TEXT).value,
+                "description": sheet[row][DataDumper.COL_INTRO_TEXT],
                 "sprite": get_sprite_path(name, DataDumper.SPRITE_NAME_INTRO),
-                "dependencies": DataDumper.construct_dependencies(
-                    sheet.cell(
-                        row,
-                        DataDumper.COL_DEPENDENCIES,
-                    ).value,
-                ),
-                "decisions": DataDumper.fill_decisions_from_row(name, sheet, row),
+                "dependencies": sheet[row][DataDumper.COL_DEPENDENCIES].splitlines(),
+                "decisions": DataDumper.get_decisions_from_row(name, sheet, row)
             }
         )
 
@@ -72,7 +69,7 @@ class DataDumper(object):
         return result
 
     @staticmethod
-    def fill_decisions_from_row(name, sheet, row):
+    def get_decisions_from_row(name, sheet: pd.DataFrame, row):
         DECISION_PREFIX = "dec"
         CONSEQUENCE_PREFIX = "dec"
         IMAGE_FORMAT_SUFFIX = ".png"
@@ -91,48 +88,41 @@ class DataDumper(object):
             + IMAGE_FORMAT_SUFFIX
         )
 
+        DECISIONS_COUNT = 4
         decisions = []
-        for idx in range(4):
+        for idx in range(DECISIONS_COUNT):
             sheet_idx = idx + 1
             decision = {
-                "description": sheet.cell(
-                    row + idx,
-                    DataDumper.COL_DECISIONS_TEXT,
-                ).value,
+                "description": sheet[row + idx][DataDumper.COL_DECISIONS_TEXT],
                 "sprite": get_sprite_path(name, decision_sprite_name(sheet_idx)),
                 "consequence": {
-                    "text": sheet.cell(
-                        row + idx,
-                        DataDumper.COL_CONSEQUENCES_TEXT,
-                    ).value,
+                    "text": sheet[row + idx][DataDumper.COL_CONSEQUENCES_TEXT],
                     "sprite": get_sprite_path(name, consequence_sprite_name(sheet_idx)),
-                    "price": sheet.cell(
-                        row + idx,
-                        DataDumper.COL_CONSEQUENCES_TEXT,
-                    ).value,
+                    "price": sheet[row + idx][DataDumper.COL_PRICES],
                     "rewards": DataDumper.fill_rewards(
-                        sheet.cell(
-                            row + idx,
-                            DataDumper.COL_CONSEQUENCES_TEXT,
-                        ).value,
+                        sheet[row + idx][DataDumper.COL_REWARDS],
                     ),
                 },
             }
             decisions.append(decision)
         return decisions
 
-    def fill_game_data(self, sheet: gspread.Worksheet):
-        DATA_TOP_OFFSET = 3
+    def construct_events(self, sheet: pandas.DataFrame):
+        DATA_TOP_OFFSET = 2
 
         events = [
-            {"name": x, "row": idx}
+            {"name": x, "row": idx + DATA_TOP_OFFSET}
             for idx, x in enumerate(
-                sheet.col_values(DataDumper.COL_NAME)[DATA_TOP_OFFSET:]
+                sheet[DATA_TOP_OFFSET:][DataDumper.COL_NAME]
             )
             if x != ""
         ]
         for event in events:
-            self.fill_event_by_idx(event, sheet, event["row"])
+            # FIXME: Я не знаю почему тут надо транспонировать датафрейм. Вот бы кто
+            #  рассказал
+            self.fill_event_by_idx(event, sheet.transpose(), event["row"])
+
+        return events
 
 
 def __main__():
