@@ -1,6 +1,10 @@
 from functools import partial
 
-from sgj.graphics.constants import SCREEN_WIDTH, SELECT_CARD_SCALE, HORIZONTAL_CARDS_PADDING
+from sgj.graphics.constants import (
+    HORIZONTAL_CARDS_PADDING,
+    SCREEN_WIDTH,
+    SELECT_CARD_SCALE,
+)
 
 
 class SelectCardController:

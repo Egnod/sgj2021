@@ -3,8 +3,8 @@ from typing import Optional
 
 import gspread
 import pandas
-from tinydb import TinyDB, Query
 import pandas as pd
+from tinydb import Query, TinyDB
 
 
 def get_sprite_path(name: str, sprite_name: Optional[str] = None):
@@ -39,7 +39,7 @@ class DataDumper(object):
         vals = pd.DataFrame(sheet.get_all_values())
 
         events = self.construct_events(vals)
-        self._db.upsert({'events': events}, Query().events.exists())
+        self._db.upsert({"events": events}, Query().events.exists())
 
     @staticmethod
     def fill_event_by_idx(event: dict, sheet: pd.DataFrame, row: int):
@@ -49,7 +49,7 @@ class DataDumper(object):
                 "description": sheet[row][DataDumper.COL_INTRO_TEXT],
                 "sprite": get_sprite_path(name, DataDumper.SPRITE_NAME_INTRO),
                 "dependencies": sheet[row][DataDumper.COL_DEPENDENCIES].splitlines(),
-                "decisions": DataDumper.get_decisions_from_row(name, sheet, row)
+                "decisions": DataDumper.get_decisions_from_row(name, sheet, row),
             },
         )
 
