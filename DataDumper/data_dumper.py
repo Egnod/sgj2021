@@ -53,7 +53,7 @@ class DataDumper(object):
                     ).value,
                 ),
                 "decisions": DataDumper.fill_decisions_from_row(name, sheet, row),
-            }
+            },
         )
 
     @staticmethod
@@ -127,7 +127,7 @@ class DataDumper(object):
         events = [
             {"name": x, "row": idx}
             for idx, x in enumerate(
-                sheet.col_values(DataDumper.COL_NAME)[DATA_TOP_OFFSET:]
+                sheet.col_values(DataDumper.COL_NAME)[DATA_TOP_OFFSET:],
             )
             if x != ""
         ]
