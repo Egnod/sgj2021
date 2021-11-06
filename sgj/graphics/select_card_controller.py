@@ -79,7 +79,6 @@ class SelectCardController:
         card.chosen = True
 
         self.events_stack.append(partial(self._set_chosen, card))
-        self.events_stack.append(partial(self._unset_hover, card))
 
     def set_selected_scale(self, card):
         """
