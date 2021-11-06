@@ -34,6 +34,7 @@ class SelectCardSprite(arcade.Sprite):
 
         self.chosen = False
         self.hovered = False
+        self.hovered_at = None
 
     def update(self):
         """

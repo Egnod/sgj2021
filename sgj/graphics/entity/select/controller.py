@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import partial
 from typing import List
 
@@ -8,7 +9,7 @@ from sgj.graphics.constants import (
     SCREEN_WIDTH,
     SELECT_CARD_SCALE,
 )
-from sgj.graphics.select_card_sprite import SelectCardSprite
+from sgj.graphics.entity.select.sprite import SelectCardSprite
 
 
 class SelectCardController:
@@ -90,7 +91,10 @@ class SelectCardController:
         """
         Actions on card hover.
         """
-        if not card.hovered:
+        if not card.hovered and (
+            not card.hovered_at
+            or (datetime.now() - card.hovered_at).total_seconds() > 0.05
+        ):
             card.hovered = True
             self.events_stack.append(partial(self._set_hover, card))
 
@@ -98,6 +102,12 @@ class SelectCardController:
         """
         Actions on card un-hover.
         """
+        if (
+            card.hovered_at
+            and (datetime.now() - card.hovered_at).total_seconds() < 0.05
+        ):
+            return None
+
         card.hovered = False
         self.events_stack.append(partial(self._unset_hover, card))
 
@@ -274,6 +284,8 @@ class SelectCardController:
     def _set_hover(self, card):
         speed = 10
         target_y = card.start_y + 30
+
+        card.hovered_at = datetime.now()
 
         if card.center_y == target_y:
             return True

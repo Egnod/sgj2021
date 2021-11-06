@@ -1,9 +1,9 @@
 import arcade
 
-from sgj.graphics.card_sprite import CardSprite
 from sgj.graphics.constants import *
-from sgj.graphics.select_card_controller import SelectCardController
-from sgj.graphics.select_card_sprite import SelectCardSprite
+from sgj.graphics.entity.card.sprite import CardSprite
+from sgj.graphics.entity.select.controller import SelectCardController
+from sgj.graphics.entity.select.sprite import SelectCardSprite
 
 
 class GameView(arcade.View):
