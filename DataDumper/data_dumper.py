@@ -73,16 +73,16 @@ class DataDumper(object):
 
     @staticmethod
     def parse_rewards(value: str):
-        HAPPINESS_PREFIX = "h:"
+        ANGRY_PREFIX = "a:"
         FATUM_PREFIX = "f:"
         ENERGY_PREFIX = "e:"
         result = {}
         for reward in value.split(", "):
-            if reward.startswith(HAPPINESS_PREFIX):
-                result["happiness"] = int(reward.removeprefix(HAPPINESS_PREFIX))
+            if reward.startswith(ANGRY_PREFIX):
+                result["angry"] = int(reward.removeprefix(ANGRY_PREFIX))
             elif reward.startswith(FATUM_PREFIX):
                 result["fatum"] = int(reward.removeprefix(FATUM_PREFIX))
-            elif reward.startswith(HAPPINESS_PREFIX):
+            elif reward.startswith(ANGRY_PREFIX):
                 result["energy"] = int(reward.removeprefix(ENERGY_PREFIX))
         return result
 

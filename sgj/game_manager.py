@@ -11,7 +11,7 @@ class GameManager:
         self.energy = self.energy_min_max[0]
         self.angry_min_max = [0, 100]
         self.angry = mean(self.angry_min_max)
-        self.fatum_min_max = [0, 100]
+        self.fatum_min_max = [0, 10]
         self.fatum = self.fatum_min_max[0]
 
         self.cur_event = None
