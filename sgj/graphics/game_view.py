@@ -82,18 +82,14 @@ class GameView(arcade.View):
 
         self.shadertoy_time += 0.01
 
-        # Не рисуем ничего больше пока есть новости
-        # TODO: может, надо просто блочить клики
-        # TODO: if self.game_manager.get_news()
-        if self.news.is_blocking_other():
-            self.news.draw()
-            return
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
         self.select_cards_controller.draw_events()
 
         self.angry_stat.draw_bar()
+
+        self.news.draw()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
@@ -172,7 +168,7 @@ class GameView(arcade.View):
             if self.news.is_blocking_other():
                 self.news.deactivate()
             else:
-                self.news.activate()
+                self.news.activate("123")
 
     def on_update(self, x):
         """Move everything"""
@@ -217,6 +213,12 @@ class GameView(arcade.View):
             self.select_cards_controller.pre_render()
 
         self.news.update()
+        # Не рисуем ничего больше пока есть новости
+        # TODO: может, надо просто блочить клики
+        # TODO: if self.game_manager.get_news()
+        if self.news.is_blocking_other():
+            return
+
         self.card_sprite_list.update()
         self.select_card_sprite_list.update()
         self.select_cards_controller.render_events()
