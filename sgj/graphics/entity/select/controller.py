@@ -100,7 +100,7 @@ class SelectCardController:
             and not card.hovered
             and (
                 not card.hovered_at
-                or (datetime.now() - card.hovered_at).total_seconds() > 0.6
+                or (datetime.now() - card.hovered_at).total_seconds() > 0.7
             )
         ):
             card.hovered = True
@@ -111,7 +111,7 @@ class SelectCardController:
         """
         Actions on card un-hover.
         """
-        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.6:
+        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.7:
             return None
 
         self.events_stack.append(partial(self._unset_hover, card))
@@ -160,7 +160,7 @@ class SelectCardController:
 
         start_x = card.center_x - card.width / 2 + 15
         start_y = card.center_y + card.height / 2 - 20
-
+        print(card.get_description())
         arcade.draw_text(
             card.get_description(),
             start_x,

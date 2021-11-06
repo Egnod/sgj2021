@@ -77,10 +77,6 @@ class GameView(arcade.View):
         self.window.use()
         self.window.clear()
 
-        self.shadertoy.render(
-            time=0,
-        )
-
         self.shadertoy_time += 0.01
 
         self.card_sprite_list.draw()
