@@ -78,10 +78,15 @@ class GameManager:
         """
         Returns false in case of resources is not enough for this decision
         """
+        print(idx)
+
         if not self.is_decision_available(idx):
             return False
 
         dec = self.cur_event["decisions"][idx]
+
+        print(dec)
+
         self.energy -= int(dec["price"]["energy"])
         self._process_rewards(dec["consequence"]["rewards"])
         self._process_news(dec["consequence"]["news"])

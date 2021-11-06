@@ -9,7 +9,17 @@ class SelectCardSprite(arcade.Sprite):
     Derives from arcade.Sprite.
     """
 
-    def __init__(self, filename, scale, joystick, index, selects_count, event_card):
+    def __init__(
+        self,
+        filename,
+        scale,
+        joystick,
+        index,
+        selects_count,
+        event_card,
+        card_meta,
+        is_available,
+    ):
         """Set up the space ship."""
 
         # Call the parent Sprite constructor
@@ -23,6 +33,8 @@ class SelectCardSprite(arcade.Sprite):
         self.speed = 30
         self.joystick: Joystick = joystick
 
+        self.card_meta = card_meta
+
         self.remove = False
         self.for_show = False
         self.to_start = False
@@ -35,6 +47,18 @@ class SelectCardSprite(arcade.Sprite):
         self.chosen = False
         self.hovered = False
         self.hovered_at = None
+        self.hover_start = True
+
+        self.is_available = is_available
+
+        # self.card_message = arcade.Sprite("./GameData/Images/Interface/card_message.jpg")
+
+    def get_description(self):
+        if self.is_available:
+            return self.card_meta["description"]
+
+        else:
+            return "Не хватает ресурсов (энергия/фатум)"
 
     def update(self):
         """

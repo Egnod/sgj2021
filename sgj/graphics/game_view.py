@@ -1,4 +1,3 @@
-
 import arcade
 from arcade.experimental import Shadertoy
 
@@ -7,6 +6,7 @@ from sgj.graphics.constants import *
 from sgj.graphics.entity.card.sprite import CardSprite
 from sgj.graphics.entity.select.controller import SelectCardController
 from sgj.graphics.entity.select.sprite import SelectCardSprite
+from sgj.graphics.entity.stats.angry import AngryStat
 
 
 class GameView(arcade.View):
@@ -19,22 +19,18 @@ class GameView(arcade.View):
 
         self.card_chosen = False
 
+        self.manager = manager
+
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
         self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
-        self.select_cards_controller = SelectCardController(None, [])
+        self.select_cards_controller: SelectCardController = SelectCardController(
+            None,
+            [],
+        )
         self.select_cards_controller.set_game_view(self)
 
         self.held_card = None
-
-        # Sounds
-        self.laser_sound = arcade.load_sound(":resources:sounds/hurt5.wav")
-        self.hit_sound1 = arcade.load_sound(":resources:sounds/explosion1.wav")
-        self.hit_sound2 = arcade.load_sound(":resources:sounds/explosion2.wav")
-        self.hit_sound3 = arcade.load_sound(":resources:sounds/hit1.wav")
-        self.hit_sound4 = arcade.load_sound(":resources:sounds/hit2.wav")
-
-        self.explosion_list = []
 
         self.check_unheld = None
 
@@ -42,6 +38,8 @@ class GameView(arcade.View):
             self.window.get_size(),
             "./GameData/Shaders/bg.glsl",
         )
+
+        self.angry_stat = AngryStat(manager, self.window)
 
         self.shadertoy_time = 0.0
 
@@ -53,8 +51,20 @@ class GameView(arcade.View):
 
         self.game_over = False
 
+        self.card_chosen = False
+
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
+        self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
+        self.select_cards_controller: SelectCardController = SelectCardController(
+            None,
+            [],
+        )
+        self.select_cards_controller.set_game_view(self)
+
+        self.held_card = None
+
+        self.check_unheld = None
 
     def on_draw(self):
         """
@@ -68,21 +78,30 @@ class GameView(arcade.View):
         self.window.clear()
 
         self.shadertoy.render(
-            time=self.shadertoy_time
+            time=0,
         )
+
         self.shadertoy_time += 0.01
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
         self.select_cards_controller.draw_events()
 
+        self.angry_stat.draw_bar()
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
 
         cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
-        if len(cards) > 0 and not self.card_chosen:
-            self.held_card = cards[-1]
+        card = next(iter(cards), None)
+
+        if (
+            card
+            and not self.card_chosen
+            and self.manager.is_decision_available(card.index)
+        ):
+            self.held_card = card
             self.select_cards_controller.set_selected_scale(self.held_card)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
@@ -97,7 +116,10 @@ class GameView(arcade.View):
             cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
             if len(cards) > 0:
-                self.select_cards_controller.set_hover(cards[-1])
+                card = cards[-1]
+
+                if not card.hover_start:
+                    self.select_cards_controller.set_hover(card)
             else:
                 for card in self.select_card_sprite_list:
                     if not card.chosen:
@@ -151,8 +173,10 @@ class GameView(arcade.View):
             else:
                 joystick = None
 
+            event = self.manager.get_next_event()
+
             card_sprite = CardSprite(
-                "./sgj/graphics/assets/sprites/cards/test.png",
+                "./sgj/graphics/assets/sprites/cards/test.png",  # event["sprite"]
                 EVENT_CARD_SCALE,
                 joystick,
             )
@@ -160,14 +184,16 @@ class GameView(arcade.View):
 
             select_cards_sprite = [
                 SelectCardSprite(
-                    card,
+                    "./GameData/Images/Events/Village accident/dec4.png",
                     SELECT_CARD_SCALE,
                     joystick,
                     index=index,
                     selects_count=len(card_sprite.select_cards),
                     event_card=card_sprite,
+                    card_meta=card,
+                    is_available=self.manager.is_decision_available(index),
                 )
-                for index, card in enumerate(card_sprite.select_cards)
+                for index, card in enumerate(event["decisions"])
             ]
 
             self.select_card_sprite_list.extend(select_cards_sprite)

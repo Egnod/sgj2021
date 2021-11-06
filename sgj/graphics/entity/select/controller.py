@@ -1,19 +1,19 @@
+import math
 from datetime import datetime
 from functools import partial
-from typing import List
+from typing import List, Optional
 
 import arcade
 
-from sgj.graphics.constants import (
-    HORIZONTAL_CARDS_PADDING,
-    SELECT_CARD_SCALE,
-)
+from sgj.graphics.constants import HORIZONTAL_CARDS_PADDING, SELECT_CARD_SCALE
 from sgj.graphics.entity.select.sprite import SelectCardSprite
 
 
 class SelectCardController:
     def __init__(self, event_card, cards):
-        self.default_speed = 30  # Default speed for any card actions
+        from sgj.graphics.game_view import GameView
+
+        self.default_speed = 100  # Default speed for any card actions
 
         self.event_card = event_card
         self.cards: List[SelectCardSprite] = cards
@@ -30,7 +30,7 @@ class SelectCardController:
         )
         self.turnover_card.alpha = 0
 
-        self.game_view = None
+        self.game_view: Optional[GameView] = None
 
     def set_game_view(self, view):
         self.game_view = view
@@ -95,24 +95,25 @@ class SelectCardController:
         """
         Actions on card hover.
         """
-        if not card.hovered and (
-            not card.hovered_at
-            or (datetime.now() - card.hovered_at).total_seconds() > 0.05
+        if (
+            not card.hover_start
+            and not card.hovered
+            and (
+                not card.hovered_at
+                or (datetime.now() - card.hovered_at).total_seconds() > 0.6
+            )
         ):
             card.hovered = True
             self.events_stack.append(partial(self._set_hover, card))
+            self.draw_events_stack.append(partial(self._set_description_draw, card))
 
     def unset_hover(self, card):
         """
         Actions on card un-hover.
         """
-        if (
-            card.hovered_at
-            and (datetime.now() - card.hovered_at).total_seconds() < 0.05
-        ):
+        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.6:
             return None
 
-        card.hovered = False
         self.events_stack.append(partial(self._unset_hover, card))
 
     def set_chosen(self, card):
@@ -128,7 +129,7 @@ class SelectCardController:
         """
         Set selected card scale.
         """
-        card.scale = 0.4
+        card.scale = 0.2
 
     def set_default_scale(self, card):
         """
@@ -144,6 +145,31 @@ class SelectCardController:
             self.turnover_alpha = 0
             self.draw_events_stack.append(partial(self._set_turnover_draw, card))
             self.events_stack.append(partial(self._set_turnover_update, card))
+
+    def _set_description_draw(self, card: SelectCardSprite):
+        if not card.hovered and not card.hover_start or card.chosen:
+            return True
+
+        arcade.draw_rectangle_filled(
+            card.center_x,
+            card.center_y,
+            card.width,
+            card.height,
+            (0, 0, 0, 100),
+        )
+
+        start_x = card.center_x - card.width / 2 + 15
+        start_y = card.center_y + card.height / 2 - 20
+
+        arcade.draw_text(
+            card.get_description(),
+            start_x,
+            start_y,
+            width=math.floor(card.width),
+            multiline=True,
+        )
+
+        return False
 
     def _set_turnover_draw(self, card: SelectCardSprite):
         if not self.turnover_card:
@@ -224,6 +250,8 @@ class SelectCardController:
             card.center_y = self.event_card.center_y
             card.width = self.event_card.width
             card.height = self.event_card.height
+
+            self.game_view.manager.process_decision(card.index)
             return True
 
         if card.center_x != self.event_card.center_x:
@@ -275,7 +303,10 @@ class SelectCardController:
     def _unset_hover(self, card):
         speed = 10
 
+        card.hover_start = False
+
         if card.center_y == card.start_y or card.hovered:
+            card.hovered = False
             return True
 
         if card.center_y - speed < card.start_y:
@@ -286,8 +317,10 @@ class SelectCardController:
         return False
 
     def _set_hover(self, card):
-        speed = 10
-        target_y = card.start_y + 30
+        card.hover_start = True
+
+        speed = card.height / 2
+        target_y = card.start_y + speed
 
         card.hovered_at = datetime.now()
 
