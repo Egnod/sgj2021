@@ -100,7 +100,7 @@ class SelectCardController:
             and not card.hovered
             and (
                 not card.hovered_at
-                or (datetime.now() - card.hovered_at).total_seconds() > 0.7
+                or (datetime.now() - card.hovered_at).total_seconds() > 0.75
             )
         ):
             card.hovered = True
@@ -111,7 +111,7 @@ class SelectCardController:
         """
         Actions on card un-hover.
         """
-        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.7:
+        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.75:
             return None
 
         self.events_stack.append(partial(self._unset_hover, card))
