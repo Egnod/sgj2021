@@ -1,6 +1,6 @@
 from functools import partial
 
-from sgj.graphics.constants import SCREEN_WIDTH, SELECT_CARD_SCALE
+from sgj.graphics.constants import SCREEN_WIDTH, SELECT_CARD_SCALE, HORIZONTAL_CARDS_PADDING
 
 
 class SelectCardController:
@@ -24,8 +24,9 @@ class SelectCardController:
         self.events_stack = new_stack
 
     def pre_render(self):
-        chunk_size = SCREEN_WIDTH / len(self.cards)
-        pos_shift = chunk_size / 2
+        PADDING = SCREEN_WIDTH * HORIZONTAL_CARDS_PADDING
+        chunk_size = (SCREEN_WIDTH - PADDING * 2) / len(self.cards)
+        pos_shift = chunk_size / 2 + PADDING
 
         for index, card in enumerate(self.cards):
             card.start_x = card.center_x = chunk_size * index + pos_shift
