@@ -94,6 +94,9 @@ class GameView(arcade.View):
 
         selected_card = None
 
+        if self.card_chosen:
+            return None
+
         if self.held_card and arcade.check_for_collision_with_list(
             self.held_card,
             self.card_sprite_list,
