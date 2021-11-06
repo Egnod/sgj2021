@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import gspread
@@ -5,7 +6,7 @@ import pandas
 import pandas as pd
 from tinydb import Query, TinyDB
 
-from sgj.graphics.constants import DATABASE_FILEPATH
+from sgj.graphics.constants import DATABASE_FILEPATH, DECISIONS_COUNT
 
 
 def get_sprite_path(name: str, sprite_name: Optional[str] = None):
@@ -14,6 +15,9 @@ def get_sprite_path(name: str, sprite_name: Optional[str] = None):
     if sprite_name is not None:
         return os.path.join("GameData", "Images", "Events", name, sprite_name)
     return os.path.join("GameData", "Images", "Events", name)
+
+def int_safe(val: str) -> int:
+    return int(val) if val != '' else 0
 
 
 class DataDumper(object):
@@ -29,7 +33,6 @@ class DataDumper(object):
     COL_NEWS_REWARDS: int = 10
 
     SPRITE_NAME_INTRO = "intro.png"
-    DECISIONS_COUNT = 4
 
     def __init__(self, table_id):
         self._table_id = table_id
@@ -61,12 +64,11 @@ class DataDumper(object):
     def parse_price(value: str):
         result = {}
         prices = value.split(", ")
-        assert len(prices) > 0
-        int_price = lambda val: int(val) if val != "" else 0
+        assert(len(prices) > 0)
 
-        result["energy"] = int_price(prices[0])
+        result["energy"] = int_safe(prices[0])
         if len(prices) > 1:
-            result["energy"] = int_price(prices[0])
+            result["energy"] = int_safe(prices[0])
         return result
 
     @staticmethod
@@ -105,25 +107,27 @@ class DataDumper(object):
         )
 
         decisions = []
-        for idx in range(DataDumper.DECISIONS_COUNT):
+        for idx in range(DECISIONS_COUNT):
             sheet_idx = idx + 1
             decision = {
                 "description": sheet[row + idx][DataDumper.COL_DECISIONS_TEXT],
                 "sprite": get_sprite_path(name, decision_sprite_name(sheet_idx)),
+                "price": DataDumper.parse_price(
+                    sheet[row + idx][DataDumper.COL_PRICES]
+                ),
                 "consequence": {
                     "text": sheet[row + idx][DataDumper.COL_CONSEQUENCES_TEXT],
                     "sprite": get_sprite_path(name, consequence_sprite_name(sheet_idx)),
-                    "price": DataDumper.parse_price(
-                        sheet[row + idx][DataDumper.COL_PRICES],
-                    ),
                     "rewards": DataDumper.parse_rewards(
                         sheet[row + idx][DataDumper.COL_REWARDS],
                     ),
-                    "news_delay": sheet[row + idx][DataDumper.COL_NEWS_DELAY],
-                    "news_text": sheet[row + idx][DataDumper.COL_NEWS_TEXT],
-                    "news_rewards": DataDumper.parse_rewards(
-                        sheet[row + idx][DataDumper.COL_NEWS_REWARDS],
-                    ),
+                    "news": {
+                        "delay": int_safe(sheet[row + idx][DataDumper.COL_NEWS_DELAY]),
+                        "text": sheet[row + idx][DataDumper.COL_NEWS_TEXT],
+                        "rewards": DataDumper.parse_rewards(
+                            sheet[row + idx][DataDumper.COL_NEWS_REWARDS]
+                        ),
+                    },
                 },
             }
             decisions.append(decision)
