@@ -1,10 +1,14 @@
 from functools import partial
+from typing import List
+
+import arcade
 
 from sgj.graphics.constants import (
     HORIZONTAL_CARDS_PADDING,
     SCREEN_WIDTH,
     SELECT_CARD_SCALE,
 )
+from sgj.graphics.select_card_sprite import SelectCardSprite
 
 
 class SelectCardController:
@@ -12,9 +16,19 @@ class SelectCardController:
         self.default_speed = 30  # Default speed for any card actions
 
         self.event_card = event_card
-        self.cards = cards
+        self.cards: List[SelectCardSprite] = cards
 
         self.events_stack = []
+        self.draw_events_stack = []
+        self.turnover_alpha = 0
+
+        self.chosen_effect_finish = False
+        self.chosen_card_texture_changed = False
+
+        self.turnover_card = arcade.load_animated_gif(
+            "./sgj/graphics/assets/imgs/card_turnover.gif",
+        )
+        self.turnover_card.alpha = 0
 
     def render_events(self):
         new_stack = []
@@ -26,6 +40,17 @@ class SelectCardController:
                 new_stack.append(event)
 
         self.events_stack = new_stack
+
+    def draw_events(self):
+        new_stack = []
+
+        for event in self.draw_events_stack:
+            result = event()
+
+            if not result:
+                new_stack.append(event)
+
+        self.draw_events_stack = new_stack
 
     def pre_render(self):
         PADDING = SCREEN_WIDTH * HORIZONTAL_CARDS_PADDING
@@ -97,6 +122,80 @@ class SelectCardController:
         """
         card.scale = SELECT_CARD_SCALE
 
+    def set_turnover(self, card):
+        """
+        Set default card scale after actions.
+        """
+        if card.chosen:
+            self.turnover_alpha = 0
+            self.draw_events_stack.append(partial(self._set_turnover_draw, card))
+            self.events_stack.append(partial(self._set_turnover_update, card))
+
+    def _set_turnover_draw(self, card: SelectCardSprite):
+        if not self.turnover_card:
+            return True
+
+        if not self.chosen_card_texture_changed:
+            alpha = 255
+            alpha_speed = 5
+
+        else:
+            alpha = 0
+            alpha_speed = -5
+
+        if self.chosen_effect_finish:
+            if not self.chosen_card_texture_changed:
+                if self.turnover_alpha < alpha:
+                    if self.turnover_alpha + alpha_speed > alpha:
+                        self.turnover_alpha += alpha - self.turnover_alpha
+
+                    else:
+                        self.turnover_alpha += alpha_speed
+            else:
+                if self.turnover_alpha > alpha:
+                    if self.turnover_alpha + alpha_speed < alpha:
+                        self.turnover_alpha -= self.turnover_alpha - alpha
+
+                    else:
+                        self.turnover_alpha += alpha_speed
+
+                if self.turnover_card == 0:
+                    self.turnover_card.remove_from_sprite_lists()
+
+            self.turnover_card.center_x = card.center_x
+            self.turnover_card.center_y = card.center_y
+            self.turnover_card.scale = card.scale
+            self.turnover_card.width = card.width
+            self.turnover_card.height = card.height
+            self.turnover_card.alpha = self.turnover_alpha
+
+            self.turnover_card.draw()
+
+        return False
+
+    def _set_turnover_update(self, card: SelectCardSprite):
+        if self.chosen_card_texture_changed or not self.turnover_card:
+            return True
+
+        if self.chosen_effect_finish:
+            self.turnover_card.update_animation()
+
+            if self.turnover_card.alpha >= 255 and not self.chosen_card_texture_changed:
+                texture = arcade.load_texture(
+                    "./sgj/graphics/assets/sprites/cards/des4.png",
+                )
+                card.append_texture(texture)
+                card.set_texture(1)
+
+                card.center_x = self.event_card.center_x
+                card.center_y = self.event_card.center_y
+                card.width = self.event_card.width
+                card.height = self.event_card.height
+
+                self.chosen_card_texture_changed = True
+
+        return False
+
     def _set_chosen(self, card):
         speed = 15
         expand_speed = 5
@@ -151,12 +250,14 @@ class SelectCardController:
             else:
                 card.height += expand_speed
 
+        self.chosen_effect_finish = True
+
         return False
 
     def _unset_hover(self, card):
         speed = 10
 
-        if card.center_y == card.start_y:
+        if card.center_y == card.start_y or card.hovered:
             return True
 
         if card.center_y - speed < card.start_y:

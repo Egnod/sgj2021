@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 import gspread
@@ -62,8 +61,8 @@ class DataDumper(object):
     def parse_price(value: str):
         result = {}
         prices = value.split(", ")
-        assert(len(prices) > 0)
-        int_price = lambda val: int(val) if val != '' else 0
+        assert len(prices) > 0
+        int_price = lambda val: int(val) if val != "" else 0
 
         result["energy"] = int_price(prices[0])
         if len(prices) > 1:
@@ -115,7 +114,7 @@ class DataDumper(object):
                     "text": sheet[row + idx][DataDumper.COL_CONSEQUENCES_TEXT],
                     "sprite": get_sprite_path(name, consequence_sprite_name(sheet_idx)),
                     "price": DataDumper.parse_price(
-                        sheet[row + idx][DataDumper.COL_PRICES]
+                        sheet[row + idx][DataDumper.COL_PRICES],
                     ),
                     "rewards": DataDumper.parse_rewards(
                         sheet[row + idx][DataDumper.COL_REWARDS],
@@ -123,7 +122,7 @@ class DataDumper(object):
                     "news_delay": sheet[row + idx][DataDumper.COL_NEWS_DELAY],
                     "news_text": sheet[row + idx][DataDumper.COL_NEWS_TEXT],
                     "news_rewards": DataDumper.parse_rewards(
-                        sheet[row + idx][DataDumper.COL_NEWS_REWARDS]
+                        sheet[row + idx][DataDumper.COL_NEWS_REWARDS],
                     ),
                 },
             }

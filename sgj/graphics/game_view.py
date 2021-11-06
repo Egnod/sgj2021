@@ -19,7 +19,7 @@ class GameView(arcade.View):
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
         self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
-        self.select_cards_controller = None
+        self.select_cards_controller = SelectCardController(None, [])
         self.held_card = None
 
         # Sounds
@@ -40,7 +40,7 @@ class GameView(arcade.View):
         """Set up the game and initialize the variables."""
 
         self.game_over = False
-        arcade.set_background_color(arcade.csscolor.BLACK)
+        arcade.set_background_color(arcade.csscolor.WHITE)
         #  self.background = arcade.load_texture("./sgj/graphics/assets/imgs/bg.gif")
 
         # Sprite lists
@@ -56,6 +56,7 @@ class GameView(arcade.View):
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
+        self.select_cards_controller.draw_events()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
@@ -110,6 +111,7 @@ class GameView(arcade.View):
         else:
             self.card_chosen = True
             self.select_cards_controller.set_chosen(selected_card)
+            self.select_cards_controller.set_turnover(selected_card)
 
             for card in self.select_card_sprite_list:
                 if card != selected_card:
@@ -151,10 +153,8 @@ class GameView(arcade.View):
 
             self.select_card_sprite_list.extend(select_cards_sprite)
 
-            self.select_cards_controller = SelectCardController(
-                self.card_sprite_list[0],
-                self.select_card_sprite_list,
-            )
+            self.select_cards_controller.cards = self.select_card_sprite_list
+            self.select_cards_controller.event_card = self.card_sprite_list[0]
 
             self.select_cards_controller.pre_render()
 
