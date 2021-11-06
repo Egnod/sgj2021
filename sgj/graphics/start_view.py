@@ -1,5 +1,6 @@
 import arcade
 
+from sgj.game_manager import GameManager
 from sgj.graphics.game_view import GameView
 
 
@@ -73,10 +74,6 @@ class StartView(arcade.View):
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.KEY_1:
-            game_view = GameView()
+            game_view = GameView(GameManager("./GameData/GameData.json"))
             game_view.start_new_game(1)
-            self.window.show_view(game_view)
-        elif symbol == arcade.key.KEY_2:
-            game_view = GameView()
-            game_view.start_new_game(2)
             self.window.show_view(game_view)

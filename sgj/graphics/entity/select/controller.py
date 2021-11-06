@@ -31,6 +31,11 @@ class SelectCardController:
         )
         self.turnover_card.alpha = 0
 
+        self.game_view = None
+
+    def set_game_view(self, view):
+        self.game_view = view
+
     def render_events(self):
         new_stack = []
 

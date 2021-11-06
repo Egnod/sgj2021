@@ -1,5 +1,8 @@
-import arcade
 
+import arcade
+from arcade.experimental import Shadertoy
+
+from sgj.game_manager import GameManager
 from sgj.graphics.constants import *
 from sgj.graphics.entity.card.sprite import CardSprite
 from sgj.graphics.entity.select.controller import SelectCardController
@@ -9,7 +12,7 @@ from sgj.graphics.entity.select.sprite import SelectCardSprite
 class GameView(arcade.View):
     """Main application class."""
 
-    def __init__(self):
+    def __init__(self, manager: GameManager):
         super().__init__()
 
         self.game_over = False
@@ -20,6 +23,8 @@ class GameView(arcade.View):
         self.card_sprite_list = arcade.SpriteList()
         self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
         self.select_cards_controller = SelectCardController(None, [])
+        self.select_cards_controller.set_game_view(self)
+
         self.held_card = None
 
         # Sounds
@@ -33,6 +38,14 @@ class GameView(arcade.View):
 
         self.check_unheld = None
 
+        self.shadertoy = Shadertoy.create_from_file(
+            self.window.get_size(),
+            "./GameData/Shaders/bg.glsl",
+        )
+
+        self.shadertoy_x = 0
+        self.shadertoy_time = 0.0
+
         for joystick in self.window.joysticks:
             joystick.push_handlers(self)
 
@@ -40,8 +53,6 @@ class GameView(arcade.View):
         """Set up the game and initialize the variables."""
 
         self.game_over = False
-        arcade.set_background_color(arcade.csscolor.WHITE)
-        #  self.background = arcade.load_texture("./sgj/graphics/assets/imgs/bg.gif")
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
@@ -53,6 +64,15 @@ class GameView(arcade.View):
 
         # This command has to happen before we start drawing
         arcade.start_render()
+
+        self.window.use()
+        self.window.clear()
+
+        self.shadertoy.render(
+            time=self.shadertoy_time, mouse_position=(self.shadertoy_x, 550)
+        )
+        self.shadertoy_x += 1
+        self.shadertoy_time += 0.09
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
@@ -70,6 +90,7 @@ class GameView(arcade.View):
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """User moves mouse"""
         # If we are holding cards, move them with the mouse
+
         if card := self.held_card:
             card.center_x += dx
             card.center_y += dy
