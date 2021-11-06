@@ -106,6 +106,9 @@ class GameView(arcade.View):
             self.held_card = card
             self.select_cards_controller.set_selected_scale(self.held_card)
 
+        if self.news.is_blocking_other():
+            self.news.deactivate()
+
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """User moves mouse"""
         # If we are holding cards, move them with the mouse
