@@ -50,7 +50,7 @@ class DataDumper(object):
                 "sprite": get_sprite_path(name, DataDumper.SPRITE_NAME_INTRO),
                 "dependencies": sheet[row][DataDumper.COL_DEPENDENCIES].splitlines(),
                 "decisions": DataDumper.get_decisions_from_row(name, sheet, row)
-            }
+            },
         )
 
     @staticmethod
@@ -113,7 +113,7 @@ class DataDumper(object):
         events = [
             {"name": x, "row": idx + DATA_TOP_OFFSET}
             for idx, x in enumerate(
-                sheet[DATA_TOP_OFFSET:][DataDumper.COL_NAME]
+                sheet[DATA_TOP_OFFSET:][DataDumper.COL_NAME],
             )
             if x != ""
         ]

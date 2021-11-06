@@ -1,8 +1,8 @@
-
 import arcade
 
 from sgj.graphics.card_sprite import CardSprite
 from sgj.graphics.constants import *
+from sgj.graphics.select_card_controller import SelectCardController
 from sgj.graphics.select_card_sprite import SelectCardSprite
 
 
@@ -13,11 +13,13 @@ class GameView(arcade.View):
         super().__init__()
 
         self.game_over = False
-        self.background = None
+
+        self.card_chosen = False
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
         self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
+        self.select_cards_controller = None
         self.held_card = None
 
         # Sounds
@@ -39,7 +41,7 @@ class GameView(arcade.View):
 
         self.game_over = False
         arcade.set_background_color(arcade.csscolor.BLACK)
-        self.background = arcade.load_texture("./sgj/graphics/assets/imgs/bg.gif")
+        #  self.background = arcade.load_texture("./sgj/graphics/assets/imgs/bg.gif")
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
@@ -52,14 +54,6 @@ class GameView(arcade.View):
         # This command has to happen before we start drawing
         arcade.start_render()
 
-        arcade.draw_lrwh_rectangle_textured(
-            0,
-            0,
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT,
-            self.background,
-        )
-
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
 
@@ -68,27 +62,26 @@ class GameView(arcade.View):
 
         cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
-        if len(cards) > 0:
+        if len(cards) > 0 and not self.card_chosen:
             self.held_card = cards[-1]
-            self.held_card.wipe_primary_card_actions()
-            self.held_card.set_selected_card()
+            self.select_cards_controller.set_selected_scale(self.held_card)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """User moves mouse"""
-
         # If we are holding cards, move them with the mouse
         if card := self.held_card:
             card.center_x += dx
             card.center_y += dy
 
-        else:
+        elif not self.card_chosen:
             cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
             if len(cards) > 0:
-                cards[-1].set_primary_card()
+                self.select_cards_controller.set_hover(cards[-1])
             else:
                 for card in self.select_card_sprite_list:
-                    card.unset_primary_card()
+                    if not card.chosen:
+                        self.select_cards_controller.unset_hover(card)
 
     def on_mouse_release(
         self,
@@ -99,12 +92,28 @@ class GameView(arcade.View):
     ):
         """Called when the user presses a mouse button."""
 
-        if self.held_card:
-            self.check_unheld = self.held_card
-            self.held_card = None
+        selected_card = None
 
-    def on_key_press(self, symbol, modifiers):
-        """Called whenever a key is pressed."""
+        if self.held_card and arcade.check_for_collision_with_list(
+            self.held_card,
+            self.card_sprite_list,
+        ):
+            selected_card = self.held_card
+
+        if not selected_card:
+            for card in self.select_card_sprite_list:
+                self.select_cards_controller.set_to_start(card)
+                self.select_cards_controller.set_default_scale(card)
+        else:
+            self.card_chosen = True
+            self.select_cards_controller.set_chosen(selected_card)
+
+            for card in self.select_card_sprite_list:
+                if card != selected_card:
+                    self.select_cards_controller.set_hide(card)
+
+        if self.held_card:
+            self.held_card = None
 
     def on_update(self, x):
         """Move everything"""
@@ -132,27 +141,20 @@ class GameView(arcade.View):
                     joystick,
                     index=index,
                     selects_count=len(card_sprite.select_cards),
+                    event_card=card_sprite,
                 )
                 for index, card in enumerate(card_sprite.select_cards)
             ]
 
             self.select_card_sprite_list.extend(select_cards_sprite)
 
-        elif self.check_unheld:
-            selected_card = None
+            self.select_cards_controller = SelectCardController(
+                self.card_sprite_list[0],
+                self.select_card_sprite_list,
+            )
 
-            if arcade.check_for_collision_with_list(
-                self.check_unheld,
-                self.card_sprite_list,
-            ):
-                selected_card = self.check_unheld
-
-            if not selected_card:
-                for card in self.select_card_sprite_list:
-                    card.check_or_move_to_start()
-                    card.unset_selected_card()
-
-            self.check_unheld = None
+            self.select_cards_controller.pre_render()
 
         self.card_sprite_list.update()
         self.select_card_sprite_list.update()
+        self.select_cards_controller.render_events()
