@@ -6,6 +6,8 @@ import pandas
 from tinydb import TinyDB, Query
 import pandas as pd
 
+from sgj.graphics.constants import DATABASE_FILEPATH
+
 
 def get_sprite_path(name: str, sprite_name: Optional[str] = None):
     import os
@@ -23,13 +25,16 @@ class DataDumper(object):
     COL_CONSEQUENCES_TEXT: int = 5
     COL_PRICES: int = 6
     COL_REWARDS: int = 7
+    COL_NEWS_DELAY: int = 8
+    COL_NEWS_TEXT: int = 9
+    COL_NEWS_REWARDS: int = 10
 
     SPRITE_NAME_INTRO = "intro.png"
-    DATABASE_FILEPATH = os.path.join("..", "GameData", "GameData.json")
+    DECISIONS_COUNT = 4
 
     def __init__(self, table_id):
         self._table_id = table_id
-        self._db = TinyDB(self.DATABASE_FILEPATH)  # type: TinyDB
+        self._db = TinyDB(DATABASE_FILEPATH)  # type: TinyDB
 
     def load_data(self):
 
@@ -54,7 +59,19 @@ class DataDumper(object):
         )
 
     @staticmethod
-    def fill_rewards(value: str):
+    def parse_price(value: str):
+        result = {}
+        prices = value.split(", ")
+        assert(len(prices) > 0)
+        int_price = lambda val: int(val) if val != '' else 0
+
+        result["energy"] = int_price(prices[0])
+        if len(prices) > 1:
+            result["energy"] = int_price(prices[0])
+        return result
+
+    @staticmethod
+    def parse_rewards(value: str):
         HAPPINESS_PREFIX = "h:"
         FATUM_PREFIX = "f:"
         ENERGY_PREFIX = "e:"
@@ -88,9 +105,8 @@ class DataDumper(object):
             + IMAGE_FORMAT_SUFFIX
         )
 
-        DECISIONS_COUNT = 4
         decisions = []
-        for idx in range(DECISIONS_COUNT):
+        for idx in range(DataDumper.DECISIONS_COUNT):
             sheet_idx = idx + 1
             decision = {
                 "description": sheet[row + idx][DataDumper.COL_DECISIONS_TEXT],
@@ -98,9 +114,16 @@ class DataDumper(object):
                 "consequence": {
                     "text": sheet[row + idx][DataDumper.COL_CONSEQUENCES_TEXT],
                     "sprite": get_sprite_path(name, consequence_sprite_name(sheet_idx)),
-                    "price": sheet[row + idx][DataDumper.COL_PRICES],
-                    "rewards": DataDumper.fill_rewards(
+                    "price": DataDumper.parse_price(
+                        sheet[row + idx][DataDumper.COL_PRICES]
+                    ),
+                    "rewards": DataDumper.parse_rewards(
                         sheet[row + idx][DataDumper.COL_REWARDS],
+                    ),
+                    "news_delay": sheet[row + idx][DataDumper.COL_NEWS_DELAY],
+                    "news_text": sheet[row + idx][DataDumper.COL_NEWS_TEXT],
+                    "news_rewards": DataDumper.parse_rewards(
+                        sheet[row + idx][DataDumper.COL_NEWS_REWARDS]
                     ),
                 },
             }
