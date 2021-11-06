@@ -4,6 +4,7 @@ from arcade.experimental import Shadertoy
 from sgj.game_manager import GameManager
 from sgj.graphics.constants import *
 from sgj.graphics.entity.card.sprite import CardSprite
+from sgj.graphics.entity.news.news import News
 from sgj.graphics.entity.select.controller import SelectCardController
 from sgj.graphics.entity.select.sprite import SelectCardSprite
 from sgj.graphics.entity.stats.angry import AngryStat
@@ -40,6 +41,8 @@ class GameView(arcade.View):
         )
 
         self.angry_stat = AngryStat(manager, self.window)
+
+        self.news = News()
 
         self.shadertoy_time = 0.0
 
@@ -78,6 +81,13 @@ class GameView(arcade.View):
         self.window.clear()
 
         self.shadertoy_time += 0.01
+
+        # Не рисуем ничего больше пока есть новости
+        # TODO: может, надо просто блочить клики
+        # TODO: if self.game_manager.get_news()
+        if self.news.is_blocking_other():
+            self.news.draw()
+            return
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
@@ -157,6 +167,13 @@ class GameView(arcade.View):
         if self.held_card:
             self.held_card = None
 
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.SPACE:
+            if self.news.is_blocking_other():
+                self.news.deactivate()
+            else:
+                self.news.activate()
+
     def on_update(self, x):
         """Move everything"""
 
@@ -199,6 +216,7 @@ class GameView(arcade.View):
 
             self.select_cards_controller.pre_render()
 
+        self.news.update()
         self.card_sprite_list.update()
         self.select_card_sprite_list.update()
         self.select_cards_controller.render_events()
