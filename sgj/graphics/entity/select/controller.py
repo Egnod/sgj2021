@@ -6,7 +6,6 @@ import arcade
 
 from sgj.graphics.constants import (
     HORIZONTAL_CARDS_PADDING,
-    SCREEN_WIDTH,
     SELECT_CARD_SCALE,
 )
 from sgj.graphics.entity.select.sprite import SelectCardSprite
@@ -59,8 +58,8 @@ class SelectCardController:
         self.draw_events_stack = new_stack
 
     def pre_render(self):
-        PADDING = SCREEN_WIDTH * HORIZONTAL_CARDS_PADDING
-        chunk_size = (SCREEN_WIDTH - PADDING * 2) / len(self.cards)
+        PADDING = arcade.get_window().width * HORIZONTAL_CARDS_PADDING
+        chunk_size = (arcade.get_window().width - PADDING * 2) / len(self.cards)
         pos_shift = chunk_size / 2 + PADDING
 
         for index, card in enumerate(self.cards):
