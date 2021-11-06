@@ -21,9 +21,9 @@ class GameManager:
 
     def get_stat(self):
         return {
-            'energy': self.energy,
-            'fatum': self.fatum,
-            'angry': self.angry,
+            "energy": self.energy,
+            "fatum": self.fatum,
+            "angry": self.angry,
         }
 
     def get_next_event(self) -> dict:
@@ -38,7 +38,7 @@ class GameManager:
         result = True
         dec = self.cur_event["decisions"][idx]
         result &= dec["price"]["energy"] <= self.energy
-        result &= dec["price"].get('fatum', 0) <= self.fatum
+        result &= dec["price"].get("fatum", 0) <= self.fatum
         return result
 
     def get_news(self):
@@ -46,6 +46,7 @@ class GameManager:
         Returns None in case of no news. Else return text and processed rewards
         """
         import sys
+
         min_delay = sys.maxsize
         text = None
         rewards = None
@@ -65,13 +66,13 @@ class GameManager:
             news[0] -= 1
 
     def _process_news(self, news: dict):
-        if news['text'] != "":
-            self.news.append((news['delay'], news['text'], news['rewards']))
+        if news["text"] != "":
+            self.news.append((news["delay"], news["text"], news["rewards"]))
 
     def _process_rewards(self, rewards: dict):
-        self.energy += rewards.get('energy', 0)
-        self.fatum += rewards.get('fatum', 0)
-        self.angry += rewards.get('angry', 0)
+        self.energy += rewards.get("energy", 0)
+        self.fatum += rewards.get("fatum", 0)
+        self.angry += rewards.get("angry", 0)
 
     def process_decision(self, idx: int) -> bool:
         """
@@ -88,6 +89,7 @@ class GameManager:
 
 def main():
     from sgj.graphics.constants import DATABASE_FILEPATH
+
     gm = GameManager(DATABASE_FILEPATH)
     gm.get_next_event()
     gm.process_decision(1)
@@ -95,4 +97,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

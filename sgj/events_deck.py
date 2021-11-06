@@ -4,9 +4,10 @@ from copy import copy
 
 class EventsDeck:
     def __init__(self, db_filepath: str):
-        from tinydb import TinyDB, Query
+        from tinydb import Query, TinyDB
+
         db = TinyDB(db_filepath)
-        self.events = db.get(Query().events.exists())['events']  # type: list
+        self.events = db.get(Query().events.exists())["events"]  # type: list
         self.unused_events_shuffled = copy(self.events)  # type: list
         random.shuffle(self.unused_events_shuffled)
 
@@ -17,9 +18,9 @@ class EventsDeck:
                 d[k] = v * mul
 
         for decision in event["decisions"]:
-            mul_dict(decision['price'], multiplier)
-            mul_dict(decision['consequence']['rewards'], multiplier)
-            mul_dict(decision['consequence']['news']['rewards'], multiplier)
+            mul_dict(decision["price"], multiplier)
+            mul_dict(decision["consequence"]["rewards"], multiplier)
+            mul_dict(decision["consequence"]["news"]["rewards"], multiplier)
 
         return event
 
@@ -32,9 +33,11 @@ class EventsDeck:
 
 def main():
     from sgj.graphics.constants import DATABASE_FILEPATH
+
     ed = EventsDeck(DATABASE_FILEPATH)
     foo = ed.get_random_event(2)
     from pprint import pprint
+
     pprint(foo)
 
 

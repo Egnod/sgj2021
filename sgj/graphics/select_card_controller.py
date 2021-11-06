@@ -206,6 +206,10 @@ class SelectCardController:
             and card.height == self.event_card.height
             and card.width == self.event_card.width
         ):
+            card.center_x = self.event_card.center_x
+            card.center_y = self.event_card.center_y
+            card.width = self.event_card.width
+            card.height = self.event_card.height
             return True
 
         if card.center_x != self.event_card.center_x:

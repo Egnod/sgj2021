@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 import gspread
@@ -16,8 +15,9 @@ def get_sprite_path(name: str, sprite_name: Optional[str] = None):
         return os.path.join("GameData", "Images", "Events", name, sprite_name)
     return os.path.join("GameData", "Images", "Events", name)
 
+
 def int_safe(val: str) -> int:
-    return int(val) if val != '' else 0
+    return int(val) if val != "" else 0
 
 
 class DataDumper(object):
@@ -64,7 +64,7 @@ class DataDumper(object):
     def parse_price(value: str):
         result = {}
         prices = value.split(", ")
-        assert(len(prices) > 0)
+        assert len(prices) > 0
 
         result["energy"] = int_safe(prices[0])
         if len(prices) > 1:
@@ -113,7 +113,7 @@ class DataDumper(object):
                 "description": sheet[row + idx][DataDumper.COL_DECISIONS_TEXT],
                 "sprite": get_sprite_path(name, decision_sprite_name(sheet_idx)),
                 "price": DataDumper.parse_price(
-                    sheet[row + idx][DataDumper.COL_PRICES]
+                    sheet[row + idx][DataDumper.COL_PRICES],
                 ),
                 "consequence": {
                     "text": sheet[row + idx][DataDumper.COL_CONSEQUENCES_TEXT],
@@ -125,7 +125,7 @@ class DataDumper(object):
                         "delay": int_safe(sheet[row + idx][DataDumper.COL_NEWS_DELAY]),
                         "text": sheet[row + idx][DataDumper.COL_NEWS_TEXT],
                         "rewards": DataDumper.parse_rewards(
-                            sheet[row + idx][DataDumper.COL_NEWS_REWARDS]
+                            sheet[row + idx][DataDumper.COL_NEWS_REWARDS],
                         ),
                     },
                 },
