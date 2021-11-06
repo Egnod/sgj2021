@@ -64,7 +64,7 @@ class SelectCardController:
 
         for index, card in enumerate(self.cards):
             card.start_x = card.center_x = chunk_size * index + pos_shift
-            card.start_y = card.height + 20
+            card.start_y = 0
 
             card.center_y = -card.height
 

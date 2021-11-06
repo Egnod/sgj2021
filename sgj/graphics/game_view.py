@@ -153,7 +153,7 @@ class GameView(arcade.View):
 
             card_sprite = CardSprite(
                 "./sgj/graphics/assets/sprites/cards/test.png",
-                SCALE,
+                EVENT_CARD_SCALE,
                 joystick,
             )
             self.card_sprite_list.append(card_sprite)
