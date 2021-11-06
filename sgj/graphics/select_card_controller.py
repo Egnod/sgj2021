@@ -15,7 +15,6 @@ class SelectCardController:
     def render_events(self):
         new_stack = []
 
-        print(self.events_stack)
         for event in self.events_stack:
             result = event()
 
@@ -79,8 +78,8 @@ class SelectCardController:
         card.hovered = False
         card.chosen = True
 
-        self.events_stack.append(partial(self._unset_hover, card))
         self.events_stack.append(partial(self._set_chosen, card))
+        self.events_stack.append(partial(self._unset_hover, card))
 
     def set_selected_scale(self, card):
         """
