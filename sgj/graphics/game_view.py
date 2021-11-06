@@ -43,7 +43,6 @@ class GameView(arcade.View):
             "./GameData/Shaders/bg.glsl",
         )
 
-        self.shadertoy_x = 0
         self.shadertoy_time = 0.0
 
         for joystick in self.window.joysticks:
@@ -69,10 +68,9 @@ class GameView(arcade.View):
         self.window.clear()
 
         self.shadertoy.render(
-            time=self.shadertoy_time, mouse_position=(self.shadertoy_x, 550)
+            time=self.shadertoy_time
         )
-        self.shadertoy_x += 1
-        self.shadertoy_time += 0.09
+        self.shadertoy_time += 0.05
 
         self.card_sprite_list.draw()
         self.select_card_sprite_list.draw()
