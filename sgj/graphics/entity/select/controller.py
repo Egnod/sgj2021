@@ -253,7 +253,7 @@ class SelectCardController:
             width=math.floor(card.width) - lr_shift,
             multiline=True,
             anchor_y="center",
-            anchor_x="center"
+            anchor_x="center",
         )
 
         return False
