@@ -115,7 +115,7 @@ class SelectCardController:
                 not card.hovered_at
                 or (
                     datetime.now() > card.hovered_at
-                    and (datetime.now() - card.hovered_at).total_seconds() > 0.6
+                    and (datetime.now() - card.hovered_at).total_seconds() > 0.8
                 )
             )
         ):
@@ -129,7 +129,7 @@ class SelectCardController:
             not force
             and card.hovered_at
             and datetime.now() > card.hovered_at
-            and (datetime.now() - card.hovered_at).total_seconds() < 0.6
+            and (datetime.now() - card.hovered_at).total_seconds() < 0.8
         ):
             return None
 
