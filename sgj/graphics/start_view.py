@@ -32,6 +32,12 @@ class StartView(arcade.View):
         self.back_sound = arcade.Sound("./GameData/Sounds/menu_sound.wav")
         self.player = None
 
+        self.background = arcade.load_texture(
+            "./GameData/Images/Interface/menu_bg.jpg",
+            width=self.window.width,
+            height=self.window.height,
+        )
+
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
@@ -39,6 +45,9 @@ class StartView(arcade.View):
                 child=self.v_box,
             ),
         )
+
+    def on_update(self, delta_time: float):
+        super(StartView, self).on_update(delta_time)
 
     def on_click_start(self, event):
         game_view = GameView(GameManager("./GameData/GameData.json"))
@@ -59,4 +68,29 @@ class StartView(arcade.View):
     def on_draw(self):
         """Draw this view"""
         arcade.start_render()
+        self.background.draw_sized(
+            self.window.width / 2,
+            self.window.height / 2,
+            self.window.width,
+            self.window.height,
+        )
+
+        arcade.draw_rectangle_filled(
+            center_x=self.window.width / 2,
+            center_y=self.window.height - 200,
+            width=self.window.width,
+            height=200,
+            color=(*arcade.color.BLACK, 30),
+        )
+
+        arcade.draw_text(
+            "Trixter",
+            self.window.width / 2,
+            self.window.height - 190,
+            color=arcade.color.WHITE,
+            font_size=self.window.width / 10,
+            anchor_x="center",
+            anchor_y="center",
+        )
+
         self.manager.draw()
