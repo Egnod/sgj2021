@@ -71,9 +71,7 @@ class SelectCardController:
         self.draw_events_stack = new_stack
 
     def pre_render(self):
-        MIN_PADDING = 380
         PADDING = arcade.get_window().width * HORIZONTAL_CARDS_PADDING
-        PADDING = PADDING if PADDING >= MIN_PADDING else MIN_PADDING
 
         chunk_size = (arcade.get_window().width - PADDING * 2) / len(self.cards)
         pos_shift = chunk_size / 2 + PADDING
@@ -151,7 +149,7 @@ class SelectCardController:
         """
         Set selected card scale.
         """
-        card.scale = 0.2
+        card.scale = 0.3
 
     def set_default_scale(self, card):
         """
