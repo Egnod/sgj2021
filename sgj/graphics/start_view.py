@@ -1,10 +1,48 @@
 import arcade
+import arcade.gui
 
 from sgj.game_manager import GameManager
 from sgj.graphics.game_view import GameView
 
 
+class QuitButton(arcade.gui.UIFlatButton):
+    def on_click(self, event: arcade.gui.UIOnClickEvent):
+        arcade.exit()
+
+
 class StartView(arcade.View):
+    def __init__(self, window=None):
+        super().__init__(window)
+
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+
+        self.v_box = arcade.gui.UIBoxLayout()
+
+        start_button = arcade.gui.UIFlatButton(text="Start Game", width=200)
+        self.v_box.add(start_button.with_space_around(bottom=20))
+
+        quit_button = QuitButton(text="Quit", width=200)
+        self.v_box.add(quit_button)
+
+        start_button.on_click = self.on_click_start
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                child=self.v_box,
+            ),
+        )
+
+    def on_click_start(self, event):
+        print(event.__dict__)
+        game_view = GameView(GameManager("./GameData/GameData.json"))
+        game_view.start_new_game(1)
+        self.window.show_view(game_view)
+
     def on_show(self):
         """This is run once when we switch to this view"""
         arcade.set_background_color(arcade.csscolor.BLACK)
@@ -16,64 +54,4 @@ class StartView(arcade.View):
     def on_draw(self):
         """Draw this view"""
         arcade.start_render()
-        line_height = 70
-        line_location = self.window.height - line_height * 2
-        arcade.draw_text(
-            "Asteroid Smasher",
-            self.window.width / 2,
-            line_location,
-            arcade.color.WHITE,
-            font_size=50,
-            anchor_x="center",
-            font_name="SF Atarian System",
-        )
-
-        line_location -= line_height
-        line_location -= line_height
-
-        arcade.draw_text(
-            "1 - Start One Player Game",
-            self.window.width / 2,
-            line_location,
-            arcade.color.WHITE,
-            font_size=40,
-            anchor_x="center",
-            font_name="SF Atarian System",
-        )
-
-        if len(self.window.joysticks) > 1:
-            color = arcade.color.WHITE
-        else:
-            color = arcade.color.GRAY
-
-        line_location -= line_height
-
-        arcade.draw_text(
-            "2 - Start Two Player Game",
-            self.window.width / 2,
-            line_location,
-            color,
-            font_size=40,
-            anchor_x="center",
-            font_name="SF Atarian System",
-        )
-
-        line_location -= line_height
-        line_location -= line_height
-        color = arcade.color.WHITE
-
-        arcade.draw_text(
-            "Use joysticks to play, or arrow keys to move and number keys to fire.",
-            self.window.width / 2,
-            line_location,
-            color,
-            font_size=40,
-            anchor_x="center",
-            font_name="SF Atarian System",
-        )
-
-    def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.KEY_1:
-            game_view = GameView(GameManager("./GameData/GameData.json"))
-            game_view.start_new_game(1)
-            self.window.show_view(game_view)
+        self.manager.draw()

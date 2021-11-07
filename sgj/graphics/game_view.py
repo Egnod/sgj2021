@@ -128,7 +128,9 @@ class GameView(arcade.View):
         if self.card_sprite_list:
             self.card_sprite_list[0].draw()
 
-        self.select_card_sprite_list.draw()
+        for card in self.select_card_sprite_list:
+            card.draw()
+
         self.select_cards_controller.draw_events()
 
         self.angry_stat.draw_bar()

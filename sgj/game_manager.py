@@ -5,7 +5,7 @@ from sgj.events_deck import EventsDeck
 
 
 class GameManager:
-    ENERGY_ROUND_CHARGE = 5
+    ENERGY_ROUND_CHARGE = 2
 
     def __init__(self, db_filepath: str):
         self.events_deck = EventsDeck(db_filepath)
