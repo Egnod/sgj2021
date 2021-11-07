@@ -194,6 +194,7 @@ class GameView(arcade.View):
 
         if self.news.is_blocking_other():
             self.news.deactivate()
+            play_effect(Effect.TAP_SCROLL)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """User moves mouse"""
@@ -264,19 +265,11 @@ class GameView(arcade.View):
         if self.select_cards_controller.check_for_next_round():
             return
 
-        print(symbol)
-
-        if symbol == arcade.key.SPACE:
-            if self.news.is_blocking_other():
-                self.news.deactivate()
-            else:
-                self.news.activate("123")
-
-        elif symbol == arcade.key.UP:
-            self.volume_delta = 0.5
+        if symbol == arcade.key.UP:
+            self.volume_delta = 1
 
         elif symbol == arcade.key.DOWN:
-            self.volume_delta = -0.5
+            self.volume_delta = -1
 
     def on_key_release(self, _symbol: int, _modifiers: int):
         if _symbol == arcade.key.UP:
