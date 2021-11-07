@@ -362,9 +362,10 @@ class SelectCardController:
         return False
 
     def _unset_hover(self, card):
-        speed = 10
+        speed = card.height / 2
 
         card.hover_start = False
+        card.unhover_start = True
 
         if card.center_y == card.start_y or card.hovered:
             card.hovered = False
@@ -379,6 +380,7 @@ class SelectCardController:
 
     def _set_hover(self, card):
         card.hover_start = True
+        card.unhover_start = False
 
         speed = card.height / 2
         target_y = card.start_y + speed
