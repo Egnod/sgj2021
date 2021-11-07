@@ -183,10 +183,11 @@ class GameView(arcade.View):
 
             if len(cards) > 0:
                 hovered_card = cards[-1]
-                self.dude.try_react_on_hover()
 
                 if not hovered_card.hover_start:
                     self.select_cards_controller.set_hover(hovered_card)
+                else:
+                    self.dude.try_react_on_hover()
 
             for card in self.select_card_sprite_list:
                 if not card.chosen and card != hovered_card:
