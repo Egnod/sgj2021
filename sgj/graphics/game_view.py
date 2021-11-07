@@ -3,16 +3,16 @@ from arcade.experimental import Shadertoy
 
 from sgj.game_manager import GameManager
 from sgj.graphics.constants import *
-from sgj.graphics.entity.card.sprite import CardSprite
 from sgj.graphics.entity.Dude.dude import Dude
+from sgj.graphics.entity.card.sprite import CardSprite
 from sgj.graphics.entity.news.news import News
 from sgj.graphics.entity.select.controller import SelectCardController
 from sgj.graphics.entity.select.sprite import SelectCardSprite
 from sgj.graphics.entity.stats.angry import AngryStat
 from sgj.graphics.entity.stats.energy import EnergyStat
 from sgj.graphics.entity.stats.fatum import FatumStat
-from sgj.sounds.sounds import play_effect, Effect, play_main_theme
 from sgj.graphics.entity.stats.volume import VolumeStat
+from sgj.sounds.sounds import play_effect, Effect, play_main_theme, set_volume
 
 
 class GameView(arcade.View):
@@ -59,7 +59,6 @@ class GameView(arcade.View):
         self.background = arcade.load_texture("./GameData/Images/Interface/bg.png")
 
         self.back_sound = arcade.Sound("./GameData/Sounds/game_sound.wav")
-        self.player = None
 
         self.shadertoy_time = 0.0
 
@@ -70,7 +69,6 @@ class GameView(arcade.View):
         """Set up the game and initialize the variables."""
         self.game_over = False
         play_main_theme()
-        self.player = self.back_sound.play(self.volume / MAX_VOLUME, loop=True)
 
         self.start_next_round()
 
@@ -152,10 +150,9 @@ class GameView(arcade.View):
 
         self.select_cards_controller.draw_events()
 
-        if self.volume_delta and MAX_VOLUME >= self.volume + self.volume_delta >= 0:
+        if self.volume_delta != 0 and MAX_VOLUME >= self.volume + self.volume_delta >= 0:
             self.volume += self.volume_delta
-
-        self.back_sound.set_volume(self.volume / MAX_VOLUME, self.player)
+        set_volume(self.volume)
 
         self.volume_stat.draw_bar()
         self.angry_stat.draw_bar()

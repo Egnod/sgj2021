@@ -3,7 +3,7 @@ from enum import Enum
 
 import arcade
 
-from sgj.graphics.constants import SOUNDS_DIR
+from sgj.graphics.constants import SOUNDS_DIR, MAX_VOLUME
 
 # card_moving.wav	effect.wav	music1.wav	music3.wav	news_quick.wav	trick1.wav
 # click.wav	main_menu.wav	music2.wav	news.wav	tap_scroll.wav	trick2.wav
@@ -11,6 +11,7 @@ from sgj.graphics.constants import SOUNDS_DIR
 MUISC_PATH_MAIN_THEME = os.path.join(SOUNDS_DIR, "music2.wav")
 MUISC_PATH_MENU = os.path.join(SOUNDS_DIR, "main_menu.wav")
 current_player = None  # type Optional[arcade.media.player.Player]
+
 
 class Effect(Enum):
     CARD_MOVING = os.path.join(SOUNDS_DIR, "card_moving.wav")
@@ -47,3 +48,8 @@ def play_menu_theme():
 
 def play_effect(effect: Effect):
     arcade.Sound(effect.value).play()
+
+
+def set_volume(volume: int):
+    global current_player
+    current_player.volume = volume / MAX_VOLUME
