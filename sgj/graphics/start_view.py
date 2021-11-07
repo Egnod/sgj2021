@@ -82,7 +82,7 @@ class StartView(arcade.View):
             center_y=self.window.height - 200,
             width=self.window.width,
             height=200,
-            color=(*arcade.color.BLACK, 30),
+            color=(*arcade.color.BLACK, 60),
         )
 
         arcade.draw_text(
@@ -90,7 +90,7 @@ class StartView(arcade.View):
             self.window.width / 2,
             self.window.height - 190,
             color=arcade.color.WHITE,
-            font_size=self.window.width / 10,
+            font_size=self.window.width / 20,
             anchor_x="center",
             anchor_y="center",
         )
