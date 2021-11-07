@@ -81,9 +81,16 @@ class GameManager:
             self.news.append((news["delay"], news["text"], news["rewards"]))
 
     def _process_rewards(self, rewards: dict):
-        self.energy += rewards.get("energy", 0)
-        self.fatum += rewards.get("fatum", 0)
-        self.angry += rewards.get("angry", 0)
+        def trim(a, b, x):
+            if x < a:
+                return a
+            if x > b:
+                return b
+            return x
+
+        self.energy += trim(*self.energy_min_max, rewards.get("energy", 0))
+        self.fatum += trim(*self.fatum_min_max, rewards.get("fatum", 0))
+        self.angry += trim(*self.angry_min_max, rewards.get("angry", 0))
 
     def process_decision(self, idx: int) -> bool:
         """
