@@ -3,6 +3,7 @@ import arcade.gui
 
 from sgj.game_manager import GameManager
 from sgj.graphics.game_view import GameView
+from sgj.sounds.sounds import play_menu_theme
 
 
 class QuitButton(arcade.gui.UIFlatButton):
@@ -45,6 +46,7 @@ class StartView(arcade.View):
 
     def on_show(self):
         """This is run once when we switch to this view"""
+        play_menu_theme()
         arcade.set_background_color(arcade.csscolor.BLACK)
 
         # Reset the viewport, necessary if we have a scrolling game and we need

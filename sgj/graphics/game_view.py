@@ -11,6 +11,7 @@ from sgj.graphics.entity.select.sprite import SelectCardSprite
 from sgj.graphics.entity.stats.angry import AngryStat
 from sgj.graphics.entity.stats.energy import EnergyStat
 from sgj.graphics.entity.stats.fatum import FatumStat
+from sgj.sounds.sounds import play_effect, Effect, play_main_theme
 
 
 class GameView(arcade.View):
@@ -58,6 +59,7 @@ class GameView(arcade.View):
     def start_new_game(self, player_count):
         """Set up the game and initialize the variables."""
         self.game_over = False
+        play_main_theme()
 
         self.start_next_round()
 
@@ -142,13 +144,18 @@ class GameView(arcade.View):
 
     def _process_new_round(self):
         if news := self.manager.get_news():
+            play_effect(Effect.NEWS_QUICK)
             self.news.activate(*news)
 
             _, rewards = news
             self.dude.update_reaction_on_news(rewards)
+        else:
+            play_effect(Effect.EFFECT)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
+        play_effect(Effect.CLICK)
+
         if self.select_cards_controller.check_for_next_round():
             self._process_new_round()
             return
@@ -186,6 +193,7 @@ class GameView(arcade.View):
 
                 if not hovered_card.hover_start:
                     self.select_cards_controller.set_hover(hovered_card)
+                    play_effect(Effect.CARD_MOVING)
                 else:
                     self.dude.try_react_on_hover()
 

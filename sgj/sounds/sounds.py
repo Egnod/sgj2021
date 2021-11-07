@@ -1,7 +1,7 @@
 import os
+from enum import Enum
 
 import arcade
-from pip._internal.utils.misc import enum
 
 from sgj.graphics.constants import SOUNDS_DIR
 
@@ -12,7 +12,7 @@ MUISC_PATH_MAIN_THEME = os.path.join(SOUNDS_DIR, "music2.wav")
 MUISC_PATH_MENU = os.path.join(SOUNDS_DIR, "main_menu.wav")
 current_player = None  # type Optional[arcade.media.player.Player]
 
-class Effect(enum):
+class Effect(Enum):
     CARD_MOVING = os.path.join(SOUNDS_DIR, "card_moving.wav")
     EFFECT = os.path.join(SOUNDS_DIR, "effect.wav")
     NEWS_QUICK = os.path.join(SOUNDS_DIR, "news_quick.wav")
@@ -46,4 +46,4 @@ def play_menu_theme():
 
 
 def play_effect(effect: Effect):
-    arcade.Sound(effect).play()
+    arcade.Sound(effect.value).play()
