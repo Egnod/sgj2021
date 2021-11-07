@@ -80,7 +80,7 @@ class GameManager:
             self._process_rewards(rewards)
 
         if text:
-            return {'text': text, 'rewards': rewards}
+            return [text, rewards]
         return None
 
     def _shift_news(self):
@@ -89,7 +89,7 @@ class GameManager:
 
     def _process_news(self, news: dict):
         if news["text"] != "":
-            self.news.append((news["delay"], news["text"], news["rewards"]))
+            self.news.append([news["delay"], news["text"], news["rewards"]])
 
     def _process_rewards(self, rewards: dict):
         def trim(a, b, x):

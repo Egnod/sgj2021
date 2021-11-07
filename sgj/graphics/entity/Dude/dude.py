@@ -1,5 +1,6 @@
 import os
 import random
+import time
 
 import arcade
 
@@ -23,8 +24,9 @@ class Dude:
     SPRITE_DIALOG_SHIFT = 150, 50
 
     DIALOG_SHOWING_DELAY = 4  # in sec
+    TRICK_IDLE_DELAY = 10  # in sec
 
-    CHANCE_IDLE = 0.1
+    CHANCE_IDLE = 0.01
     CHANCE_CARD_HOVER = 0.1
     CHANCE_BAD_NEWS = 0.1
 
@@ -59,17 +61,20 @@ class Dude:
         self.dialog_sprite.center_x += self.SPRITE_DIALOG_SHIFT[0]
         self.dialog_sprite.center_y += self.SPRITE_DIALOG_SHIFT[1]
 
-        self.actions_sice_last_trick = 0
+        # self.actions_sice_last_trick = 0
         self.time_since_last_action = 0.0
 
         self.dialog_left_time = 0.0
         self.text = ""
 
+        self.last_action_time = time.time() - self.TRICK_IDLE_DELAY  # даём пользователю в начале больше времени
+
     def draw(self):
         self.dude_sprite.draw()
 
     def count_action(self):
-        self.actions_sice_last_trick += 1
+        # self.actions_sice_last_trick += 1
+        self.last_action_time = time.time()
 
     def _react(self, group_name: str, chance: float):
         throw_result = random.uniform(0, 1)
@@ -78,10 +83,11 @@ class Dude:
 
     def update_reaction_on_news(self, rewards: dict):
         if rewards['angry'] > 0 or rewards['fatum'] > 0:
-            pass
+            self._react('BadNews', self.CHANCE_BAD_NEWS)
 
     def try_react_on_hover(self):
-        pass
+        # TODO: not each time call this
+        self._react('CardHover', self.CHANCE_CARD_HOVER)
 
     def _show_dialog(self, text: str, time: float):
         self.text = text
@@ -97,3 +103,5 @@ class Dude:
         self.dialog_left_time -= dt
         if self.dialog_left_time < 0:
             self._hide_dialog()
+        if self.last_action_time - time.time() > self.TRICK_IDLE_DELAY:
+            self._react('Idle', self.CHANCE_IDLE)
