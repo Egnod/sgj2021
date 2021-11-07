@@ -69,15 +69,18 @@ class GameManager:
         min_delay = sys.maxsize
         text = None
         rewards = None
+        target_idx = None
 
-        for news in self.news:
-            if news[0] < min_delay:
+        for idx, news in enumerate(self.news):
+            if news[0] < 0 and news[0] < min_delay:
                 min_delay = news[0]
                 text = news[1]
                 rewards = news[2]
+                target_idx = idx
 
-        if rewards is not None:
+        if target_idx is not None:
             self._process_rewards(rewards)
+            self.news.pop(idx)
 
         if text:
             return [text, rewards]
