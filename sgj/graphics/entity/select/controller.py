@@ -7,6 +7,7 @@ import arcade
 
 from sgj.graphics.constants import HORIZONTAL_CARDS_PADDING, SELECT_CARD_SCALE
 from sgj.graphics.entity.select.sprite import SelectCardSprite
+from sgj.sounds.sounds import Effect, play_effect
 
 
 class SelectCardController:
@@ -308,6 +309,8 @@ class SelectCardController:
     def _set_chosen(self, card):
         speed = 15
         expand_speed = 5
+
+        play_effect(Effect.EFFECT)
 
         if (
             card.center_x == self.event_card.center_x
