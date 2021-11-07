@@ -54,8 +54,6 @@ class GameView(arcade.View):
         self.dude = Dude()
 
         self.volume_delta = 0
-        global VOLUME
-        VOLUME = MAX_VOLUME // 2
 
         self.background = arcade.load_texture("./GameData/Images/Interface/bg.png")
 
@@ -151,10 +149,10 @@ class GameView(arcade.View):
 
         self.select_cards_controller.draw_events()
 
-        if self.volume_delta != 0 and MAX_VOLUME >= self.volume + self.volume_delta >= 0:
-            global VOLUME
-            VOLUME += self.volume_delta
-            set_volume(VOLUME)
+        global VOLUME
+        if self.volume_delta != 0 and MAX_VOLUME >= VOLUME + self.volume_delta >= 0:
+            new_volume = VOLUME + self.volume_delta
+            set_volume(new_volume)
 
         self.volume_stat.draw_bar()
         self.angry_stat.draw_bar()
