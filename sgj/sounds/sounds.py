@@ -55,5 +55,6 @@ def play_effect(effect: Effect):
 def set_volume(volume: int):
     global current_player
     global VOLUME
-    current_player.volume = volume / MAX_VOLUME
     VOLUME = volume
+    current_player.volume = VOLUME / MAX_VOLUME
+    print("prev: {} new: {}".format(VOLUME, volume))
