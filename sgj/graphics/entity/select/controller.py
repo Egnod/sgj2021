@@ -185,19 +185,19 @@ class SelectCardController:
 
         arcade.draw_rectangle_filled(
             center_x=self.game_view.window.width / 2,
-            center_y=self.game_view.window.height / 4,
+            center_y=self.game_view.window.height / 6,
             width=500,
             height=45,
-            color=(*arcade.color.BLACK, 50),
+            color=(*arcade.color.BLACK, 100),
         )
 
         arcade.draw_text(
             "Нажмите любую клавишу для следующего события",
             self.game_view.window.width / 2,
-            self.game_view.window.height / 4,
+            self.game_view.window.height / 6,
             width=math.floor(card.width) - 15,
             multiline=True,
-            color=arcade.color.BLACK,
+            color=arcade.color.WHITE,
             anchor_x="center",
             anchor_y="center",
             align="center",

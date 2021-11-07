@@ -104,7 +104,7 @@ class Dude:
         return False
 
     def update_reaction_on_news(self, rewards: dict):
-        if rewards["angry"] > 0 or rewards["fatum"] > 0:
+        if rewards.get("angry", 0) > 0 or rewards.get("fatum", 0) > 0:
             self._react("BadNews", self.CHANCE_BAD_NEWS)
 
     def try_react_on_hover(self):
