@@ -9,4 +9,5 @@ SCREEN_HEIGHT = 1080
 SCREEN_TITLE = "Trixter"
 HORIZONTAL_CARDS_PADDING = 0.3
 DATABASE_FILEPATH = os.path.join("..", "GameData", "GameData.json")
+SPRITE_DIR = os.path.join("GameData", "Images")
 DECISIONS_COUNT = 4

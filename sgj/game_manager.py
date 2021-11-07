@@ -1,4 +1,5 @@
 from statistics import mean
+from typing import Optional
 
 from sgj.events_deck import EventsDeck
 
@@ -21,6 +22,9 @@ class GameManager:
 
         self.news = []  # type: list
 
+        self.is_first_get = True
+        self.first_event = None
+
     def get_stat(self):
         return {
             "energy": self.energy,
@@ -38,7 +42,11 @@ class GameManager:
                 self.energy += self.ENERGY_ROUND_CHARGE
 
     def get_next_event(self) -> dict:
-        self.cur_event = self.events_deck.get_random_event(self.cur_multiplier)
+        if self.is_first_get:  # тестим и показываем игроку первое событие в начале игры
+            self.cur_event = self.events_deck.get_exact_event('Тихая деревня')
+            self.is_first_get = False
+        else:
+            self.cur_event = self.events_deck.get_random_event(self.cur_multiplier)
         self._shift_news()
         return self.cur_event
 
@@ -52,7 +60,7 @@ class GameManager:
         result &= dec["price"].get("fatum", 0) <= self.fatum
         return result
 
-    def get_news(self):
+    def get_news(self) -> Optional[list[str, dict]]:
         """
         Returns None in case of no news. Else return text and processed rewards
         """
@@ -70,7 +78,10 @@ class GameManager:
 
         if rewards is not None:
             self._process_rewards(rewards)
-        return text
+
+        if text:
+            return {'text': text, 'rewards': rewards}
+        return None
 
     def _shift_news(self):
         for news in self.news:

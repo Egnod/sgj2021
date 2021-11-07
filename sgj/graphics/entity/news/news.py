@@ -27,7 +27,8 @@ class News:
     def is_blocking_other(self):
         return self._is_blocking_other
 
-    def activate(self, text: str):
+    def activate(self, text: str, rewards: dict):
+        # TODO: show rewards
         self.text = text
         self._is_blocking_other = True
         self.pos_target = self.pos_shown

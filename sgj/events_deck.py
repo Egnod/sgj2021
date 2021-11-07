@@ -30,6 +30,13 @@ class EventsDeck:
     def get_random_events(self, count: int, multiplier: float = 1):
         return [self.get_random_event(multiplier) for _ in range(count)]
 
+    def get_exact_event(self, name: str, multiplier: float = 1):
+        for idx, event in enumerate(self.unused_events_shuffled):
+            if event['name'] == name:
+                return self.multiply_event(self.unused_events_shuffled.pop(idx),
+                                           multiplier)
+        return None
+
 
 def main():
     from sgj.graphics.constants import DATABASE_FILEPATH

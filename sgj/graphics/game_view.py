@@ -3,6 +3,7 @@ from arcade.experimental import Shadertoy
 
 from sgj.game_manager import GameManager
 from sgj.graphics.constants import *
+from sgj.graphics.entity.Dude.dude import Dude
 from sgj.graphics.entity.card.sprite import CardSprite
 from sgj.graphics.entity.news.news import News
 from sgj.graphics.entity.select.controller import SelectCardController
@@ -47,6 +48,7 @@ class GameView(arcade.View):
         self.fatum_stat = FatumStat(manager, self.window)
 
         self.news = News()
+        self.dude = Dude()
 
         self.shadertoy_time = 0.0
 
@@ -133,11 +135,20 @@ class GameView(arcade.View):
         self.energy_stat.draw_bar()
         self.fatum_stat.draw_bar()
 
+        self.dude.draw()
         self.news.draw()
+
+    def _process_new_round(self):
+        if news := self.manager.get_news():
+            self.news.activate(*news)
+
+            _, rewards = news
+            self.dude.update_reaction_on_news(rewards)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
         if self.select_cards_controller.check_for_next_round():
+            self._process_new_round()
             return
 
         cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
@@ -170,6 +181,7 @@ class GameView(arcade.View):
 
             if len(cards) > 0:
                 hovered_card = cards[-1]
+                self.dude.try_react_on_hover()
 
                 if not hovered_card.hover_start:
                     self.select_cards_controller.set_hover(hovered_card)
@@ -227,7 +239,7 @@ class GameView(arcade.View):
             else:
                 self.news.activate("123")
 
-    def on_update(self, x):
+    def on_update(self, dt):
         """Move everything"""
 
         if self.game_over:
@@ -238,6 +250,7 @@ class GameView(arcade.View):
             return
 
         self.news.update()
+        self.dude.update(dt)
         # Не рисуем ничего больше пока есть новости
         # TODO: может, надо просто блочить клики
         # TODO: if self.game_manager.get_news()
