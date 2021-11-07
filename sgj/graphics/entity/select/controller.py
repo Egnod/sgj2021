@@ -13,7 +13,7 @@ class SelectCardController:
     def __init__(self, event_card, cards):
         from sgj.graphics.game_view import GameView
 
-        self.default_speed = 10  # Default speed for any card actions
+        self.default_speed = 30  # Default speed for any card actions
 
         self.event_card = event_card
         self.cards: List[SelectCardSprite] = cards
@@ -36,6 +36,14 @@ class SelectCardController:
         self.after_consequence_end = False
 
         self.game_view: Optional[GameView] = None
+
+    def check_for_next_round(self):
+        if self.consequence_card and not self.after_consequence:
+            self.after_consequence = True
+            self.set_hide(
+                self.consequence_card,
+            )
+            return True
 
     def set_game_view(self, view):
         self.game_view = view
@@ -164,6 +172,30 @@ class SelectCardController:
         """
         self.draw_events_stack.append(partial(self._set_consequence_draw, card))
 
+    def set_round_end_tip(self, card):
+        """
+        Set round end tip (press any key).
+        """
+        self.draw_events_stack.append(partial(self._set_round_end_tip, card))
+
+    def _set_round_end_tip(self, card: SelectCardSprite):
+        if self.after_consequence:
+            return True
+
+        arcade.draw_text(
+            "Нажмите любую клавишу для следующего события",
+            self.game_view.window.width / 2,
+            self.game_view.window.height / 4,
+            width=math.floor(card.width) - 15,
+            multiline=True,
+            color=arcade.color.BLACK,
+            anchor_x="center",
+            anchor_y="center",
+            align="center",
+        )
+
+        return False
+
     def _set_description_draw(self, card: SelectCardSprite):
         if not card.hovered and not card.hover_start or card.chosen:
             return True
@@ -211,7 +243,7 @@ class SelectCardController:
         )
 
         start_x = card.center_x - card.width / 2 + 15
-        start_y = card.center_y + card.height / 2 - 20
+        start_y = card.center_y + card.height / 2 - 30
 
         arcade.draw_text(
             card.get_consequence(),
@@ -268,7 +300,7 @@ class SelectCardController:
     def _set_turnover_update(self, card: SelectCardSprite):
         if self.chosen_card_texture_changed or not self.turnover_card:
             self.set_consequence(card)
-
+            self.set_round_end_tip(card)
             return True
 
         if self.chosen_effect_finish:

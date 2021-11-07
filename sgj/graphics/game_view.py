@@ -26,7 +26,7 @@ class GameView(arcade.View):
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
-        self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
+        self.select_card_sprite_list = arcade.SpriteList()
         self.select_cards_controller: SelectCardController = SelectCardController(
             None,
             [],
@@ -66,7 +66,7 @@ class GameView(arcade.View):
 
         # Sprite lists
         self.card_sprite_list = arcade.SpriteList()
-        self.select_card_sprite_list = arcade.SpriteList(use_spatial_hash=True)
+        self.select_card_sprite_list = arcade.SpriteList()
         self.select_cards_controller: SelectCardController = SelectCardController(
             None,
             [],
@@ -134,6 +134,8 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Called when the user presses a mouse button."""
+        if self.select_cards_controller.check_for_next_round():
+            return
 
         cards = arcade.get_sprites_at_point((x, y), self.select_card_sprite_list)
 
@@ -213,18 +215,14 @@ class GameView(arcade.View):
             self.held_card = None
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.Q:
+        if self.select_cards_controller.check_for_next_round():
+            return
+
+        if symbol == arcade.key.SPACE:
             if self.news.is_blocking_other():
                 self.news.deactivate()
             else:
                 self.news.activate("123")
-
-        elif symbol == arcade.key.E:
-            if self.select_cards_controller.consequence_card:
-                self.select_cards_controller.after_consequence = True
-                self.select_cards_controller.set_hide(
-                    self.select_cards_controller.consequence_card,
-                )
 
     def on_update(self, x):
         """Move everything"""
