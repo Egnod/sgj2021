@@ -4,11 +4,13 @@ from sgj.events_deck import EventsDeck
 
 
 class GameManager:
+    ENERGY_ROUND_CHARGE = 10
+
     def __init__(self, db_filepath: str):
         self.events_deck = EventsDeck(db_filepath)
 
         self.energy_min_max = [0, 100]
-        self.energy = self.energy_min_max[0]
+        self.energy = self.energy_min_max[1]
         self.angry_min_max = [0, 100]
         self.angry = mean(self.angry_min_max)
         self.fatum_min_max = [0, 10]
@@ -25,6 +27,15 @@ class GameManager:
             "fatum": self.fatum,
             "angry": self.angry,
         }
+
+    def set_energy_round_charge(self) -> None:
+        """Increment energy on start new round (if not max yet)."""
+        if self.energy < self.energy_min_max[1]:
+            if self.energy + self.ENERGY_ROUND_CHARGE > self.energy_min_max[1]:
+                self.energy += self.energy_min_max[1] - self.energy
+
+            else:
+                self.energy += self.ENERGY_ROUND_CHARGE
 
     def get_next_event(self) -> dict:
         self.cur_event = self.events_deck.get_random_event(self.cur_multiplier)
@@ -78,14 +89,10 @@ class GameManager:
         """
         Returns false in case of resources is not enough for this decision
         """
-        print(idx)
-
         if not self.is_decision_available(idx):
             return False
 
         dec = self.cur_event["decisions"][idx]
-
-        print(dec)
 
         self.energy -= int(dec["price"]["energy"])
         self._process_rewards(dec["consequence"]["rewards"])

@@ -13,7 +13,7 @@ class SelectCardController:
     def __init__(self, event_card, cards):
         from sgj.graphics.game_view import GameView
 
-        self.default_speed = 100  # Default speed for any card actions
+        self.default_speed = 10  # Default speed for any card actions
 
         self.event_card = event_card
         self.cards: List[SelectCardSprite] = cards
@@ -29,6 +29,11 @@ class SelectCardController:
             "./sgj/graphics/assets/imgs/card_turnover.gif",
         )
         self.turnover_card.alpha = 0
+
+        self.set_consequence_at = None
+        self.consequence_card = None
+        self.after_consequence = False
+        self.after_consequence_end = False
 
         self.game_view: Optional[GameView] = None
 
@@ -100,18 +105,25 @@ class SelectCardController:
             and not card.hovered
             and (
                 not card.hovered_at
-                or (datetime.now() - card.hovered_at).total_seconds() > 0.75
+                or (
+                    datetime.now() > card.hovered_at
+                    and (datetime.now() - card.hovered_at).total_seconds() > 0.6
+                )
             )
         ):
-            card.hovered = True
             self.events_stack.append(partial(self._set_hover, card))
             self.draw_events_stack.append(partial(self._set_description_draw, card))
 
-    def unset_hover(self, card):
+    def unset_hover(self, card, force: bool = False):
         """
         Actions on card un-hover.
         """
-        if card.hovered_at and (datetime.now() - card.hovered_at).total_seconds() < 0.75:
+        if (
+            not force
+            and card.hovered_at
+            and datetime.now() > card.hovered_at
+            and (datetime.now() - card.hovered_at).total_seconds() < 0.6
+        ):
             return None
 
         self.events_stack.append(partial(self._unset_hover, card))
@@ -146,6 +158,12 @@ class SelectCardController:
             self.draw_events_stack.append(partial(self._set_turnover_draw, card))
             self.events_stack.append(partial(self._set_turnover_update, card))
 
+    def set_consequence(self, card):
+        """
+        Set card consequence time-message.
+        """
+        self.draw_events_stack.append(partial(self._set_consequence_draw, card))
+
     def _set_description_draw(self, card: SelectCardSprite):
         if not card.hovered and not card.hover_start or card.chosen:
             return True
@@ -160,12 +178,46 @@ class SelectCardController:
 
         start_x = card.center_x - card.width / 2 + 15
         start_y = card.center_y + card.height / 2 - 20
-        print(card.get_description())
+
         arcade.draw_text(
             card.get_description(),
             start_x,
             start_y,
-            width=math.floor(card.width),
+            width=math.floor(card.width) - 15,
+            multiline=True,
+        )
+
+        return False
+
+    def _set_consequence_draw(self, card: SelectCardSprite):
+        if not self.consequence_card:
+            self.consequence_card = card
+
+        if not self.set_consequence_at:
+            self.set_consequence_at = datetime.now()
+
+        if (
+            self.after_consequence
+            or (datetime.now() - self.set_consequence_at).total_seconds() >= 60
+        ):
+            return True
+
+        arcade.draw_rectangle_filled(
+            card.center_x,
+            card.center_y,
+            card.width,
+            card.height,
+            (0, 0, 0, 100),
+        )
+
+        start_x = card.center_x - card.width / 2 + 15
+        start_y = card.center_y + card.height / 2 - 20
+
+        arcade.draw_text(
+            card.get_consequence(),
+            start_x,
+            start_y,
+            width=math.floor(card.width) - 15,
             multiline=True,
         )
 
@@ -215,17 +267,15 @@ class SelectCardController:
 
     def _set_turnover_update(self, card: SelectCardSprite):
         if self.chosen_card_texture_changed or not self.turnover_card:
+            self.set_consequence(card)
+
             return True
 
         if self.chosen_effect_finish:
             self.turnover_card.update_animation()
 
             if self.turnover_card.alpha >= 255 and not self.chosen_card_texture_changed:
-                texture = arcade.load_texture(
-                    "./sgj/graphics/assets/sprites/cards/des4.png",
-                )
-                card.append_texture(texture)
-                card.set_texture(1)
+                card.set_to_consequence_texture()
 
                 card.center_x = self.event_card.center_x
                 card.center_y = self.event_card.center_y
@@ -233,6 +283,7 @@ class SelectCardController:
                 card.height = self.event_card.height
 
                 self.chosen_card_texture_changed = True
+                self.event_card.remove_from_sprite_lists()
 
         return False
 
@@ -325,6 +376,7 @@ class SelectCardController:
         card.hovered_at = datetime.now()
 
         if card.center_y == target_y:
+            card.hovered = True
             return True
 
         if card.center_y + speed > target_y:
@@ -337,8 +389,11 @@ class SelectCardController:
     def _set_hide(self, card):
         card.change_y -= self.default_speed
 
-        if card.bottom < 0:  # remove after off screen
+        if card.top < 0:  # remove after off screen
             card.remove_from_sprite_lists()
+
+            if self.after_consequence:
+                self.after_consequence_end = True
             return True
 
         return False

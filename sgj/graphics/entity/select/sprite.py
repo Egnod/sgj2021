@@ -35,6 +35,11 @@ class SelectCardSprite(arcade.Sprite):
 
         self.card_meta = card_meta
 
+        # TODO: card.card_meta["consequence"]["sprite"]
+        self.consequence_texture = arcade.load_texture(
+            "./sgj/graphics/assets/sprites/cards/des4.png",
+        )
+
         self.remove = False
         self.for_show = False
         self.to_start = False
@@ -59,6 +64,14 @@ class SelectCardSprite(arcade.Sprite):
 
         else:
             return "Не хватает ресурсов (энергия/фатум)"
+
+    def get_consequence(self):
+        return self.card_meta["consequence"]["text"]
+
+    def set_to_consequence_texture(self):
+        self.append_texture(self.consequence_texture)
+
+        self.set_texture(-1)
 
     def update(self):
         """
