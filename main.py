@@ -13,7 +13,11 @@ def main():
     arcade.load_font("./sgj/graphics/assets/fonts/SF Atarian System.ttf")
 
     window = Window(
-        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False, antialiasing=False
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT,
+        SCREEN_TITLE,
+        resizable=False,
+        antialiasing=False,
     )
     start_view = StartView()
     window.show_view(start_view)

@@ -6,7 +6,6 @@ import arcade
 
 from sgj.graphics.constants import SPRITE_DIR
 
-
 # Поведение Ой
 # Реакция на ховер любой карты (фразы вроде "уверен?", "вкус так себе")
 # Реакция на бездействие (10 секунд?)
@@ -50,7 +49,7 @@ class Dude:
         "BadNews": [
             "Ой как неосмотрительно",
             "Кто бы мог подумать, что ты так жесток",
-        ]
+        ],
     }
 
     def __init__(self):
@@ -68,7 +67,9 @@ class Dude:
         self.dialog_left_time = 0.0
         self.text = ""
 
-        self.last_action_time = time.time() + self.TRICK_IDLE_DELAY  # даём пользователю в начале больше времени
+        self.last_action_time = (
+            time.time() + self.TRICK_IDLE_DELAY
+        )  # даём пользователю в начале больше времени
 
     def draw(self):
         self.dude_sprite.draw()
@@ -91,21 +92,24 @@ class Dude:
         self.last_action_time = time.time()
 
     def _react(self, group_name: str, chance: float):
-        throw_result = 1-random.uniform(0, 1)
+        throw_result = 1 - random.uniform(0, 1)
         if throw_result >= chance:
             if len(self.PHRASES[group_name]) > 0:
                 random.shuffle(self.PHRASES[group_name])
-                self._show_dialog(self.PHRASES[group_name].pop(0), self.DIALOG_SHOWING_DELAY)
+                self._show_dialog(
+                    self.PHRASES[group_name].pop(0),
+                    self.DIALOG_SHOWING_DELAY,
+                )
                 return True
         return False
 
     def update_reaction_on_news(self, rewards: dict):
-        if rewards['angry'] > 0 or rewards['fatum'] > 0:
-            self._react('BadNews', self.CHANCE_BAD_NEWS)
+        if rewards["angry"] > 0 or rewards["fatum"] > 0:
+            self._react("BadNews", self.CHANCE_BAD_NEWS)
 
     def try_react_on_hover(self):
         if self.EACH_N_HOVER < self.hover_counter:
-            if self._react('CardHover', self.CHANCE_CARD_HOVER):
+            if self._react("CardHover", self.CHANCE_CARD_HOVER):
                 self.hover_counter = 0
 
     def _show_dialog(self, text: str, dialog_time: float):
@@ -125,5 +129,5 @@ class Dude:
 
         time_passed = time.time() - self.last_action_time
         if time_passed > self.TRICK_IDLE_DELAY:
-            if self._react('Idle', self.CHANCE_IDLE):
+            if self._react("Idle", self.CHANCE_IDLE):
                 self.last_action_time = time.time()

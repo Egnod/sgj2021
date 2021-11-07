@@ -149,7 +149,7 @@ class SelectCardController:
         """
         Set selected card scale.
         """
-        card.scale = 0.3
+        card.scale = 0.22
 
     def set_default_scale(self, card):
         """
@@ -181,6 +181,14 @@ class SelectCardController:
     def _set_round_end_tip(self, card: SelectCardSprite):
         if self.after_consequence:
             return True
+
+        arcade.draw_rectangle_filled(
+            center_x=self.game_view.window.width / 2,
+            center_y=self.game_view.window.height / 4,
+            width=500,
+            height=45,
+            color=(*arcade.color.BLACK, 50),
+        )
 
         arcade.draw_text(
             "Нажмите любую клавишу для следующего события",

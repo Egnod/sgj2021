@@ -32,9 +32,11 @@ class EventsDeck:
 
     def get_exact_event(self, name: str, multiplier: float = 1):
         for idx, event in enumerate(self.unused_events_shuffled):
-            if event['name'] == name:
-                return self.multiply_event(self.unused_events_shuffled.pop(idx),
-                                           multiplier)
+            if event["name"] == name:
+                return self.multiply_event(
+                    self.unused_events_shuffled.pop(idx),
+                    multiplier,
+                )
         return None
 
 

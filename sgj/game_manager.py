@@ -43,7 +43,7 @@ class GameManager:
 
     def get_next_event(self) -> dict:
         if self.is_first_get:  # тестим и показываем игроку первое событие в начале игры
-            self.cur_event = self.events_deck.get_exact_event('Тихая деревня')
+            self.cur_event = self.events_deck.get_exact_event("Тихая деревня")
             self.is_first_get = False
         else:
             self.cur_event = self.events_deck.get_random_event(self.cur_multiplier)

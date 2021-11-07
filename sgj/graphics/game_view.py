@@ -3,8 +3,8 @@ from arcade.experimental import Shadertoy
 
 from sgj.game_manager import GameManager
 from sgj.graphics.constants import *
-from sgj.graphics.entity.Dude.dude import Dude
 from sgj.graphics.entity.card.sprite import CardSprite
+from sgj.graphics.entity.Dude.dude import Dude
 from sgj.graphics.entity.news.news import News
 from sgj.graphics.entity.select.controller import SelectCardController
 from sgj.graphics.entity.select.sprite import SelectCardSprite
@@ -12,6 +12,7 @@ from sgj.graphics.entity.stats.angry import AngryStat
 from sgj.graphics.entity.stats.energy import EnergyStat
 from sgj.graphics.entity.stats.fatum import FatumStat
 from sgj.sounds.sounds import play_effect, Effect, play_main_theme
+from sgj.graphics.entity.stats.volume import VolumeStat
 
 
 class GameView(arcade.View):
@@ -45,11 +46,20 @@ class GameView(arcade.View):
         )
 
         self.angry_stat = AngryStat(manager, self.window)
+        self.volume_stat = VolumeStat(self, self.window)
         self.energy_stat = EnergyStat(manager, self.window)
         self.fatum_stat = FatumStat(manager, self.window)
 
         self.news = News()
         self.dude = Dude()
+
+        self.volume_delta = 0
+        self.volume = MAX_VOLUME / 2
+
+        self.background = arcade.load_texture("./GameData/Images/Interface/bg.png")
+
+        self.back_sound = arcade.Sound("./GameData/Sounds/game_sound.wav")
+        self.player = None
 
         self.shadertoy_time = 0.0
 
@@ -60,6 +70,7 @@ class GameView(arcade.View):
         """Set up the game and initialize the variables."""
         self.game_over = False
         play_main_theme()
+        self.player = self.back_sound.play(self.volume / MAX_VOLUME, loop=True)
 
         self.start_next_round()
 
@@ -84,7 +95,7 @@ class GameView(arcade.View):
         event = self.manager.get_next_event()
 
         card_sprite = CardSprite(
-            "./sgj/graphics/assets/sprites/cards/test.png",  # event["sprite"]
+            "./GameData/Images/Interface/card_texture.png",  # event["sprite"]
             EVENT_CARD_SCALE,
             None,
             card_meta=event,
@@ -93,7 +104,7 @@ class GameView(arcade.View):
 
         select_cards_sprite = [
             SelectCardSprite(
-                "./GameData/Images/Events/Village accident/dec4.png",
+                "./GameData/Images/Interface/card_texture.png",
                 SELECT_CARD_SCALE,
                 None,
                 index=index,
@@ -125,6 +136,12 @@ class GameView(arcade.View):
         self.window.use()
         self.window.clear()
 
+        self.background.draw_scaled(
+            self.window.width / 2,
+            self.window.height / 2,
+            self.window.height / self.background.height,
+        )
+
         self.shadertoy_time += 0.01
 
         if self.card_sprite_list:
@@ -135,6 +152,12 @@ class GameView(arcade.View):
 
         self.select_cards_controller.draw_events()
 
+        if self.volume_delta and MAX_VOLUME >= self.volume + self.volume_delta >= 0:
+            self.volume += self.volume_delta
+
+        self.back_sound.set_volume(self.volume / MAX_VOLUME, self.player)
+
+        self.volume_stat.draw_bar()
         self.angry_stat.draw_bar()
         self.energy_stat.draw_bar()
         self.fatum_stat.draw_bar()
@@ -244,11 +267,26 @@ class GameView(arcade.View):
         if self.select_cards_controller.check_for_next_round():
             return
 
+        print(symbol)
+
         if symbol == arcade.key.SPACE:
             if self.news.is_blocking_other():
                 self.news.deactivate()
             else:
                 self.news.activate("123")
+
+        elif symbol == arcade.key.UP:
+            self.volume_delta = 0.5
+
+        elif symbol == arcade.key.DOWN:
+            self.volume_delta = -0.5
+
+    def on_key_release(self, _symbol: int, _modifiers: int):
+        if _symbol == arcade.key.UP:
+            self.volume_delta = 0
+
+        elif _symbol == arcade.key.DOWN:
+            self.volume_delta = 0
 
     def on_update(self, dt):
         """Move everything"""
