@@ -93,7 +93,7 @@ class GameView(arcade.View):
         event = self.manager.get_next_event()
 
         card_sprite = CardSprite(
-            "./sgj/graphics/assets/sprites/cards/test.png",  # event["sprite"]
+            "./GameData/Images/Interface/card_texture.png",  # event["sprite"]
             EVENT_CARD_SCALE,
             None,
             card_meta=event,
