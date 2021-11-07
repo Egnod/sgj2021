@@ -10,6 +10,7 @@ SCREEN_TITLE = "Trixter"
 HORIZONTAL_CARDS_PADDING = 0.2
 DATABASE_FILEPATH = os.path.join("..", "GameData", "GameData.json")
 SPRITE_DIR = os.path.join("GameData", "Images")
+SOUNDS_DIR = os.path.join("GameData", "Sounds")
 DECISIONS_COUNT = 4
 MAX_VOLUME = 100
 CURRENT_VOLUME = MAX_VOLUME
