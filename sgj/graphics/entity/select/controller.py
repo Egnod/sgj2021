@@ -205,10 +205,7 @@ class SelectCardController:
         if not self.set_consequence_at:
             self.set_consequence_at = datetime.now()
 
-        if (
-            self.after_consequence
-            or (datetime.now() - self.set_consequence_at).total_seconds() >= 60
-        ):
+        if self.after_consequence:
             return True
 
         arcade.draw_rectangle_filled(

@@ -77,7 +77,9 @@ class SelectCardSprite(arcade.Sprite):
 
     def draw(self, *, filter=None, pixelated=None, blend_function=None):
         super(SelectCardSprite, self).draw(
-            filter=filter, pixelated=pixelated, blend_function=blend_function
+            filter=filter,
+            pixelated=pixelated,
+            blend_function=blend_function,
         )
 
         if self.chosen:
