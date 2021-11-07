@@ -242,15 +242,18 @@ class SelectCardController:
             (0, 0, 0, 100),
         )
 
-        start_x = card.center_x - card.width / 2 + 15
-        start_y = card.center_y + card.height / 2 - 30
+        start_x = card.center_x
+        start_y = card.center_y
+        lr_shift = 30
 
         arcade.draw_text(
             card.get_consequence(),
             start_x,
             start_y,
-            width=math.floor(card.width) - 15,
+            width=math.floor(card.width) - lr_shift,
             multiline=True,
+            anchor_y="center",
+            anchor_x="center"
         )
 
         return False
