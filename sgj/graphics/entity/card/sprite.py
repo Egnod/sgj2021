@@ -1,3 +1,5 @@
+import math
+
 import arcade
 from pyglet.input import Joystick
 
@@ -11,7 +13,7 @@ class CardSprite(arcade.Sprite):
     Derives from arcade.Sprite.
     """
 
-    def __init__(self, filename, scale, joystick):
+    def __init__(self, filename, scale, joystick, card_meta):
         """Set up the space ship."""
 
         # Call the parent Sprite constructor
@@ -33,6 +35,8 @@ class CardSprite(arcade.Sprite):
             "./sgj/graphics/assets/sprites/cards/des3.png",
             "./sgj/graphics/assets/sprites/cards/des4.png",
         ]
+        self.card_meta = card_meta
+        print(card_meta)
 
         # Mark that we are respawning.
         self.respawn()
@@ -64,6 +68,46 @@ class CardSprite(arcade.Sprite):
 
         self.thrust = 30
         self.for_show = True
+
+    def draw(self, *, filter=None, pixelated=None, blend_function=None):
+        super(CardSprite, self).draw(
+            filter=filter,
+            pixelated=pixelated,
+            blend_function=blend_function,
+        )
+
+        arcade.draw_rectangle_filled(
+            self.center_x,
+            self.center_y,
+            self.width,
+            self.height,
+            (0, 0, 0, 100),
+        )
+
+        start_x = self.center_x
+        start_y = self.center_y
+        lr_shift = 30
+
+        arcade.draw_text(
+            self.card_meta["name"],
+            start_x,
+            start_y + math.floor(self.width / 1.5),
+            width=math.floor(self.width) - lr_shift,
+            multiline=True,
+            anchor_y="center",
+            anchor_x="center",
+            align="center",
+        )
+
+        arcade.draw_text(
+            self.card_meta["description"],
+            start_x,
+            start_y,
+            width=math.floor(self.width) - lr_shift,
+            multiline=True,
+            anchor_y="center",
+            anchor_x="center",
+        )
 
     def update(self):
         """

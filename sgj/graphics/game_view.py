@@ -83,6 +83,7 @@ class GameView(arcade.View):
             "./sgj/graphics/assets/sprites/cards/test.png",  # event["sprite"]
             EVENT_CARD_SCALE,
             None,
+            card_meta=event,
         )
         self.card_sprite_list.append(card_sprite)
 
@@ -122,7 +123,9 @@ class GameView(arcade.View):
 
         self.shadertoy_time += 0.01
 
-        self.card_sprite_list.draw()
+        if self.card_sprite_list:
+            self.card_sprite_list[0].draw()
+
         self.select_card_sprite_list.draw()
         self.select_cards_controller.draw_events()
 
