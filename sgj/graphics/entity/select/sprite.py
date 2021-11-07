@@ -39,7 +39,7 @@ class SelectCardSprite(arcade.Sprite):
 
         # TODO: card.card_meta["consequence"]["sprite"]
         self.consequence_texture = arcade.load_texture(
-            "./sgj/graphics/assets/sprites/cards/des4.png",
+            "./GameData/Images/Interface/card_texture.png",
         )
 
         self.remove = False
