@@ -120,7 +120,6 @@ class SelectCardController:
             )
         ):
             self.events_stack.append(partial(self._set_hover, card))
-            self.draw_events_stack.append(partial(self._set_description_draw, card))
 
     def unset_hover(self, card, force: bool = False):
         """
@@ -197,29 +196,7 @@ class SelectCardController:
         return False
 
     def _set_description_draw(self, card: SelectCardSprite):
-        if not card.hovered and not card.hover_start or card.chosen:
-            return True
-
-        arcade.draw_rectangle_filled(
-            card.center_x,
-            card.center_y,
-            card.width,
-            card.height,
-            (0, 0, 0, 100),
-        )
-
-        start_x = card.center_x - card.width / 2 + 15
-        start_y = card.center_y + card.height / 2 - 20
-
-        arcade.draw_text(
-            card.get_description(),
-            start_x,
-            start_y,
-            width=math.floor(card.width) - 15,
-            multiline=True,
-        )
-
-        return False
+        return True
 
     def _set_consequence_draw(self, card: SelectCardSprite):
         if not self.consequence_card:
@@ -264,11 +241,11 @@ class SelectCardController:
 
         if not self.chosen_card_texture_changed:
             alpha = 255
-            alpha_speed = 5
+            alpha_speed = 3
 
         else:
             alpha = 0
-            alpha_speed = -5
+            alpha_speed = -3
 
         if self.chosen_effect_finish:
             if not self.chosen_card_texture_changed:

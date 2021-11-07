@@ -1,3 +1,5 @@
+import math
+
 import arcade
 from pyglet.input import Joystick
 
@@ -72,6 +74,37 @@ class SelectCardSprite(arcade.Sprite):
         self.append_texture(self.consequence_texture)
 
         self.set_texture(-1)
+
+    def draw(self, *, filter=None, pixelated=None, blend_function=None):
+        super(SelectCardSprite, self).draw(
+            filter=filter, pixelated=pixelated, blend_function=blend_function
+        )
+
+        if self.chosen:
+            return
+
+        arcade.draw_rectangle_filled(
+            self.center_x,
+            self.center_y,
+            self.width,
+            self.height,
+            (0, 0, 0, 100),
+        )
+
+        start_x = self.center_x
+        start_y = self.center_y + self.width / 2
+        lr_shift = 30
+
+        arcade.draw_text(
+            self.get_description(),
+            start_x,
+            start_y,
+            width=math.floor(self.width) - lr_shift,
+            multiline=True,
+            anchor_y="top",
+            anchor_x="center",
+            color=arcade.color.WHITE,
+        )
 
     def update(self):
         """
