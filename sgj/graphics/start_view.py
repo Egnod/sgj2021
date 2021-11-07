@@ -22,10 +22,10 @@ class StartView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout()
 
-        start_button = arcade.gui.UIFlatButton(text="Start Game", width=200)
+        start_button = arcade.gui.UIFlatButton(text="Сесть за стол", width=200)
         self.v_box.add(start_button.with_space_around(bottom=20))
 
-        quit_button = QuitButton(text="Quit", width=200)
+        quit_button = QuitButton(text="Выйти", width=200)
         self.v_box.add(quit_button)
 
         start_button.on_click = self.on_click_start
@@ -86,7 +86,7 @@ class StartView(arcade.View):
         )
 
         arcade.draw_text(
-            "Trixter",
+            "Трикстер",
             self.window.width / 2,
             self.window.height - 190,
             color=arcade.color.WHITE,
