@@ -2,6 +2,8 @@ import math
 
 import arcade
 
+from sgj.sounds.sounds import VOLUME
+
 
 class VolumeStat:
     BAR_WIDTH = 200
@@ -16,7 +18,7 @@ class VolumeStat:
 
     def draw_current_value(self):
         arcade.draw_text(
-            f"{math.floor(self.game_view.volume)}%",
+            f"{math.floor(VOLUME)}%",
             self.center_x,
             self.center_y,
             rotation=self.BAR_ANGLE,
@@ -37,7 +39,8 @@ class VolumeStat:
             tilt_angle=self.BAR_ANGLE,
         )
 
-        volume_width = self.BAR_WIDTH * (self.game_view.volume / 100)
+        global VOLUME
+        volume_width = self.BAR_WIDTH * (VOLUME / 100)
 
         arcade.draw_rectangle_filled(
             center_x=self.center_x - 0.5 * (self.BAR_WIDTH - volume_width),

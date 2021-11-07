@@ -12,6 +12,8 @@ MUISC_PATH_MAIN_THEME = os.path.join(SOUNDS_DIR, "music2.wav")
 MUISC_PATH_MENU = os.path.join(SOUNDS_DIR, "main_menu.wav")
 current_player = None  # type Optional[arcade.media.player.Player]
 
+VOLUME = MAX_VOLUME // 2
+
 
 class Effect(Enum):
     CARD_MOVING = os.path.join(SOUNDS_DIR, "card_moving.wav")
@@ -35,7 +37,7 @@ def play_new_current_theme(sound_path):
     stop_current_theme()
     current_theme = arcade.load_sound(sound_path)
     if current_theme:
-        current_player = arcade.play_sound(current_theme, looping=True)
+        current_player = arcade.play_sound(current_theme, looping=True, volume=VOLUME)
 
 
 def play_main_theme():
@@ -47,9 +49,11 @@ def play_menu_theme():
 
 
 def play_effect(effect: Effect):
-    arcade.Sound(effect.value).play()
+    arcade.Sound(effect.value).play(volume=VOLUME)
 
 
 def set_volume(volume: int):
     global current_player
+    global VOLUME
     current_player.volume = volume / MAX_VOLUME
+    VOLUME = volume
