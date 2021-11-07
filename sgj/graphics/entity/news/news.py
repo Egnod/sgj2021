@@ -44,22 +44,36 @@ class News:
             return
         self.news_back.draw()
 
-        text_x = self.news_back.left + self.news_back.width * (
-            1 - self.TEXT_AREA_WIDTH_SIZE) // 2
-        text_y = self.news_back.bottom + self.news_back.height * self.TEXT_AREA_HEIGHT_SIZE
+        text_x = (
+            self.news_back.left
+            + self.news_back.width * (1 - self.TEXT_AREA_WIDTH_SIZE) // 2
+        )
+        text_y = (
+            self.news_back.bottom + self.news_back.height * self.TEXT_AREA_HEIGHT_SIZE
+        )
         text_width = int(self.news_back.width * self.TEXT_AREA_WIDTH_SIZE)
-        arcade.draw_text(self.text, text_x, text_y, multiline=True, width=text_width,
-                         color=arcade.color.BLACK)
+        arcade.draw_text(
+            self.text,
+            text_x,
+            text_y,
+            multiline=True,
+            width=text_width,
+            color=arcade.color.BLACK,
+        )
 
     def _move_to_target(self):
         if self.news_back.position == self.pos_target:
             return
-        if not math.isclose(self.news_back.center_y, self.pos_target[1],
-                            abs_tol=self.MOVING_SPEED):
-            self.news_back.center_y += \
-                self.MOVING_SPEED \
-                    if self.pos_target[1] > self.news_back.center_y \
-                    else - self.MOVING_SPEED
+        if not math.isclose(
+            self.news_back.center_y,
+            self.pos_target[1],
+            abs_tol=self.MOVING_SPEED,
+        ):
+            self.news_back.center_y += (
+                self.MOVING_SPEED
+                if self.pos_target[1] > self.news_back.center_y
+                else -self.MOVING_SPEED
+            )
             return
         self.news_back.position = self.pos_target
 
