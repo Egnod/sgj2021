@@ -12,7 +12,8 @@ from sgj.graphics.entity.stats.angry import AngryStat
 from sgj.graphics.entity.stats.energy import EnergyStat
 from sgj.graphics.entity.stats.fatum import FatumStat
 from sgj.graphics.entity.stats.volume import VolumeStat
-from sgj.sounds.sounds import play_effect, Effect, play_main_theme, set_volume, VOLUME
+from sgj.sounds.sounds import (play_effect, Effect, play_main_theme, change_volume,
+                               get_volume, get_max_volume)
 
 
 class GameView(arcade.View):
@@ -149,12 +150,7 @@ class GameView(arcade.View):
 
         self.select_cards_controller.draw_events()
 
-        global VOLUME
-        if self.volume_delta != 0 and MAX_VOLUME >= VOLUME + self.volume_delta >= 0:
-            new_volume = VOLUME + self.volume_delta
-            set_volume(new_volume)
-
-        self.volume_stat.draw_bar()
+        self.volume_stat.draw_bar(get_volume(), get_max_volume())
         self.angry_stat.draw_bar()
         self.energy_stat.draw_bar()
         self.fatum_stat.draw_bar()
@@ -267,16 +263,13 @@ class GameView(arcade.View):
 
         if symbol == arcade.key.UP:
             self.volume_delta = 1
-
         elif symbol == arcade.key.DOWN:
             self.volume_delta = -1
 
     def on_key_release(self, _symbol: int, _modifiers: int):
-        if _symbol == arcade.key.UP:
+        if _symbol == arcade.key.UP or _symbol == arcade.key.DOWN:
             self.volume_delta = 0
 
-        elif _symbol == arcade.key.DOWN:
-            self.volume_delta = 0
 
     def on_update(self, dt):
         """Move everything"""
@@ -287,6 +280,9 @@ class GameView(arcade.View):
         if self.select_cards_controller.after_consequence_end:
             self.start_next_round()
             return
+
+        if self.volume_delta != 0:
+            change_volume(self.volume_delta)
 
         self.news.update()
         self.dude.update(dt)

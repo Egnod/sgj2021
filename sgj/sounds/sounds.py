@@ -1,19 +1,18 @@
 import os
 from enum import Enum
+from typing import Optional
 
 import arcade
+from pyglet.media import Player
 
-from sgj.graphics.constants import SOUNDS_DIR, MAX_VOLUME
-
-# card_moving.wav	effect.wav	music1.wav	music3.wav	news_quick.wav	trick1.wav
-# click.wav	main_menu.wav	music2.wav	news.wav	tap_scroll.wav	trick2.wav
+from sgj.graphics.constants import SOUNDS_DIR, MAX_VOLUME, trim
 
 MUISC_PATH_MAIN_THEME = os.path.join(SOUNDS_DIR, "music2.wav")
 MUISC_PATH_MENU = os.path.join(SOUNDS_DIR, "main_menu.wav")
-current_player = None  # type Optional[arcade.media.player.Player]
+current_player: Optional[Player] = None
 
-VOLUME = MAX_VOLUME // 2
-
+# TODO: Move it to global settings structure
+VOLUME = MAX_VOLUME // 2  # Volume global settings.
 
 class Effect(Enum):
     CARD_MOVING = os.path.join(SOUNDS_DIR, "card_moving.wav")
@@ -27,16 +26,15 @@ class Effect(Enum):
 
 
 def stop_current_theme():
-    global current_player
     if current_player is not None:
         arcade.stop_sound(current_player)
 
 
 def play_new_current_theme(sound_path):
-    global current_player
     stop_current_theme()
     current_theme = arcade.load_sound(sound_path)
     if current_theme:
+        global current_player
         current_player = arcade.play_sound(current_theme, looping=True, volume=VOLUME)
 
 
@@ -53,8 +51,20 @@ def play_effect(effect: Effect):
 
 
 def set_volume(volume: int):
-    global current_player
     global VOLUME
-    VOLUME = volume
-    current_player.volume = VOLUME / MAX_VOLUME
-    print("prev: {} new: {}".format(VOLUME, volume))
+    new_volume = trim(0, get_max_volume(), volume)
+    if VOLUME != new_volume:
+        VOLUME = trim(0, get_max_volume(), volume)
+        current_player.volume = VOLUME / get_max_volume()
+
+
+def get_volume() -> int:
+    return VOLUME
+
+
+def get_max_volume() -> int:
+    return MAX_VOLUME
+
+
+def change_volume(delta: int):
+    set_volume(get_volume() + delta)

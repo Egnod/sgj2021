@@ -13,4 +13,5 @@ SPRITE_DIR = os.path.join("GameData", "Images")
 SOUNDS_DIR = os.path.join("GameData", "Sounds")
 DECISIONS_COUNT = 4
 MAX_VOLUME = 100
-CURRENT_VOLUME = MAX_VOLUME
+
+trim = lambda a, b, x: max(min(x, b), a)
